@@ -2,7 +2,7 @@ HELP.md
 target/
 !**/src/main/**
 !**/src/test/**
-
+application.yml
 ### STS ###
 .apt_generated
 .classpath
