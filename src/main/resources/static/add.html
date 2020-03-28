@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>账本</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <title>新增账目</title>
+
+    <!--标准mui.css-->
+    <link rel="stylesheet" type="text/css" href="./css/mui.css">
+    <link rel="stylesheet" type="text/css" href="./css/mui.picker.min.css">
+    <link rel="stylesheet" type="text/css" href="./css/mui.poppicker.css">
+</head>
+<body>
+<header class="mui-bar mui-bar-nav">
+    <button class="mui-action-back mui-btn mui-btn-blue mui-btn-link mui-btn-nav mui-pull-left"><span class="mui-icon mui-icon-left-nav"></span>返回</button>
+    <h1 class="mui-title">新增账目</h1>
+</header>
+<div class="mui-content">
+<div class="mui-collapse-content">
+    <form class="mui-input-group">
+        <div class="mui-input-row">
+            <label>账户</label>
+            <input  id="showCardPicker" readonly name="AID" type="text" data-options="" class="mui-input-clear"   placeholder="请选择"  data-input-clear="3"><span class="mui-icon mui-icon-clear mui-hidden"></span>
+        </div>
+        <div class="mui-input-row">
+            <label>交易类别</label>
+            <input  id="tradeKind" readonly type="text" name="TRKIND" data-options="" class="mui-input-clear" placeholder="请选择" data-input-clear="3"><span class="mui-icon mui-icon-clear mui-hidden"></span>
+        </div>
+        <div class="mui-input-row">
+            <label>日期</label>
+            <input id="result" readonly type="text" name="TRDATE" placeholder="点击选择" data-options="">
+        </div>
+        <div class="mui-input-row">
+            <label>金额</label>
+            <input type="number"  name="TRNUM" step="0.01" placeholder="输入金额">
+        </div>
+        <div class="mui-input-row">
+            <label>备注</label>
+            <input type="text" name="REMARK" placeholder="输入备注">
+        </div>
+        <div id="showOppPickerdiv" class="mui-input-row" hidden>
+            <label>对方账户</label>
+            <input  id="showOppPicker" readonly type="text" name="OPPID" data-options="" class="mui-input-clear"   placeholder="请选择"  data-input-clear="3"><span class="mui-icon mui-icon-clear mui-hidden"></span>
+        </div>
+        <div class="mui-button-row" >
+            <button type="button" class="mui-btn-primary" onclick="addDetail()" data-loading-icon-position="right">确认</button>&nbsp;&nbsp;
+        </div>
+    </form>
+</div>
+</div>
+<script src="./js/mui.js"></script>
+<script src="./js/mui.picker.min.js"></script>
+<script src="./js/mui.poppicker.js"></script>
+<script src="./js/common.js"></script>
+<script src="./js/jQuery.min.js"></script>
+
+<script>
+    var bankdata = [];
+    var kinddata = [];
+
+    var checkform = function(param){
+        for(var k in param){
+            if(param[k]==''){
+                mui.toast("所有值必须填写！");
+                return false;
+            }
+        }
+        return true;
+    };
+    $(function(){
+        $.ajax({
+            url:'./rest/account',
+            type:'POST',
+            dataType:'json',
+            success:function(result){
+                for(var i=0;i<result.length;i++){
+                     bankdata.push({value:result[i].aid,text:result[i].accname})
+                }
+                $.ajax({
+                    url:'./rest/querykind',
+                    type:'POST',
+                    dataType:'json',
+                    success:function(result){
+                        for(var i=0;i<result.length;i++){
+                            kinddata.push({value:result[i].VALUE,text:result[i].TEXT})
+                        }
+                        initselect();
+                    },
+                    error:function(){
+                        mui.toast("网络错误！");
+                    }
+                });
+            },
+            error:function(){
+                mui.toast("网络错误！");
+            }
+        });
+
+    });
+
+    var addDetail = function(){
+        var formobj = $("input[name]");
+        var accountparam = {};
+        for(var i=0;i<formobj.length;i++){
+            if(formobj[i].attributes['data-options']&&formobj[i].attributes['data-options']['value']!==''){
+
+                accountparam[formobj[i].name]=formobj[i].attributes['data-options'].value;
+            }else{
+
+                if(formobj[i].name!='OPPID'){
+                    accountparam[formobj[i].name]=formobj[i].value;
+                }
+
+            }
+
+        }
+
+        if(!checkform(accountparam)){
+            return;
+        }
+        $.ajax({
+            url:'./rest/adddetail',
+            type:'POST',
+            dataType:'json',
+            data:JSON.stringify(accountparam),
+            contentType:'application/json',
+            beforeSend:function(){
+            },
+            success:function(result){
+                if(result.code&&result.code==0){
+                    mui.toast(result.msg);
+                }else{
+                    mui.toast(result.msg);
+                }
+                setTimeout(function(){
+                    location.href="./index.html";
+                },1000);
+            },
+            error:function(){
+
+            }
+        })
+    }
+    var curdate = new Date();
+
+
+    var initselect = function(){
+        //年份设置
+        var optionyear={"type":"date","beginYear":2018,"endYear":curdate.getFullYear()};
+        (function($) {
+            $.init();
+            var btns = $('#result');
+            var result  = btns[0];
+            result.value = getcurrentdate();
+
+            btns.each(function(i, btn) {
+                btn.addEventListener('tap', function() {
+                    var _self = this;
+                    if(_self.picker) {
+                        _self.picker.show(function (rs) {
+
+                            result.value =  rs.text;
+                            _self.picker.dispose();
+                            _self.picker = null;
+                        });
+                    } else {
+
+                        var id = this.getAttribute('id');
+                        /*
+                         * 首次显示时实例化组件
+                         * 示例为了简洁，将 options 放在了按钮的 dom 上
+                         * 也可以直接通过代码声明 optinos 用于实例化 DtPicker
+                         */
+                        _self.picker = new $.DtPicker(optionyear);
+                        _self.picker.show(function(rs) {
+                            /*
+                             * rs.value 拼合后的 value
+                             * rs.text 拼合后的 text
+                             * rs.y 年，可以通过 rs.y.vaue 和 rs.y.text 获取值和文本
+                             * rs.m 月，用法同年
+                             * rs.d 日，用法同年
+                             * rs.h 时，用法同年
+                             * rs.i 分（minutes 的第二个字母），用法同年
+                             */
+                            result.value =  rs.text;
+                            /*
+                             * 返回 false 可以阻止选择框的关闭
+                             * return false;
+                             */
+                            /*
+                             * 释放组件资源，释放后将将不能再操作组件
+                             * 通常情况下，不需要示放组件，new DtPicker(options) 后，可以一直使用。
+                             * 当前示例，因为内容较多，如不进行资原释放，在某些设备上会较慢。
+                             * 所以每次用完便立即调用 dispose 进行释放，下次用时再创建新实例。
+                             */
+                            _self.picker.dispose();
+                            _self.picker = null;
+                        });
+                    }
+
+                }, false);
+            });
+
+
+
+            //账户
+            dataselect('showCardPicker',bankdata);
+            //交易类别
+            //0-转账1-居家2-食品3-交通4-投资5-还款
+            dataselect('tradeKind',kinddata,function(){
+                var choosed = document.getElementById('tradeKind').getAttribute("data-options");
+                if(choosed=='00'||choosed=='40'||choosed=='50'){
+                    document.getElementById('showOppPickerdiv').removeAttribute("hidden");
+                }else{
+                    document.getElementById('showOppPickerdiv').setAttribute("hidden","true");
+                }
+            });
+            //对方账户
+            dataselect('showOppPicker',bankdata);
+        })(mui);
+    }
+
+
+</script>
+</body>
+</html>

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>编辑账户</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <title>编辑账户</title>
+
+    <!--标准mui.css-->
+    <link rel="stylesheet" type="text/css" href="./css/mui.css">
+    <link rel="stylesheet" type="text/css" href="./css/mui.picker.min.css">
+    <link rel="stylesheet" type="text/css" href="./css/mui.poppicker.css">
+</head>
+<body>
+<header class="mui-bar mui-bar-nav">
+    <button class="mui-action-back mui-btn mui-btn-blue mui-btn-link mui-btn-nav mui-pull-left"><span class="mui-icon mui-icon-left-nav"></span>返回</button>
+    <h1 class="mui-title">编辑账户</h1>
+</header>
+<div class="mui-content">
+
+    <div class="mui-collapse-content">
+        <form class="mui-input-group">
+            <div class="mui-input-row">
+                <label>账户类别</label>
+                <input id="accountprop" name="PROP" type="text" data-options="" readonly class="mui-input-clear"   placeholder="请选择"  data-input-clear="3"><span class="mui-icon mui-icon-clear mui-hidden"></span>
+            </div>
+            <div class="mui-input-row">
+                <label>所有者</label>
+                <input type="text"  name="OWNER" class="mui-input-clear" placeholder="持有者姓名" data-input-clear="3"><span class="mui-icon mui-icon-clear mui-hidden"></span>
+            </div>
+            <div class="mui-input-row">
+                <label>账户中文名</label>
+                <input type="text" name="ACCNAME" placeholder="请输入中文名" data-input-clear="3"><span class="mui-icon mui-icon-clear mui-hidden"></span>
+            </div>
+            <div class="mui-input-row">
+                <label>账户号码</label>
+                <input type="text" name="ACCOUNT" class="mui-input-clear" placeholder="请输入账户号" data-input-clear="3"><span class="mui-icon mui-icon-clear mui-hidden"></span>
+            </div>
+            <div class="mui-input-row">
+                <label>账户金额</label>
+                <input type="number" name="BALANCE" step="0.01" placeholder="输入金额">
+            </div>
+            <div class="mui-input-row">
+                <label>备注</label>
+                <input type="text" name="REMARK" data-options="" class="mui-input-clear"   placeholder="请输入备注"  data-input-clear="3"><span class="mui-icon mui-icon-clear mui-hidden"></span>
+            </div>
+            <div class="mui-button-row">
+                <button type="button" class="mui-btn mui-btn-primary" data-loading-text="提交中" data-loading-icon-position="right" onclick="submitAccount()">确认</button>&nbsp;&nbsp;
+            </div>
+        </form>
+    </div>
+</div>
+<script src="./js/mui.min.js"></script>
+<script src="./js/mui.picker.min.js"></script>
+<script src="./js/mui.poppicker.js"></script>
+<script src="./js/common.js"></script>
+<script src="./js/jQuery.min.js"></script>
+
+</body>
+<script>
+    (function($){
+        var accprop = [{value: '1', text: '资产'}, {value: '2', text: '负债'}];
+        dataselect('accountprop',accprop);
+    })(mui)
+    var checkform = function(param){
+        for(var k in param){
+            if(param[k]==''){
+                mui.toast("所有值必须填写！");
+                return false;
+            }
+        }
+        return true;
+    }
+    var submitAccount = function(){
+        var formobj = $("input[name]");
+        var accountparam = {};
+        for(var i=0;i<formobj.length;i++){
+            if(formobj[i].attributes['data-options']&&formobj[i].attributes['data-options']['value']!=''){
+                accountparam[formobj[i].name]=formobj[i].attributes['data-options'].value;
+            }else{
+                accountparam[formobj[i].name]=formobj[i].value;
+            }
+
+        }
+        if(!checkform(accountparam)){
+            return;
+        }
+
+
+        $.ajax({
+            url:'./rest/addaccount',
+            type:'POST',
+            dataType:'json',
+            data:JSON.stringify(accountparam),
+            contentType:'application/json',
+            beforeSend:function(){
+               console.log(accountparam)
+            },
+            success:function(result){
+                if(result.code&&result.code==0){
+                    mui.toast(result.msg);
+                }else{
+                    mui.toast(result.msg);
+                }
+                setTimeout(function(){
+                    location.href="./index.html";
+                },1000);
+            },
+            error:function(){
+
+            }
+        })
+    };
+</script>
+</html>

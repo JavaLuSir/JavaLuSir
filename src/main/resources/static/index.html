@@ -9,117 +9,119 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
 
     <!--标准mui.css-->
-    <link rel="stylesheet" href="./css/mui.css">
+    <link rel="stylesheet" href="./css/mui.min.css">
     <!--App自定义的css-->
     <!--<link rel="stylesheet" type="text/css" href="../css/app.css"/>-->
 
 </head>
 <style>
     * { touch-action: pan-y; }
+    .rd { color:red; }
+    .gr { color:green;}
 </style>
 <body>
 <header class="mui-bar mui-bar-nav">
-    <h1 class="mui-title">账户信息</h1>
+    <h1 class="mui-title">账本信息 | 总资产<span id="total"></span></h1>
 </header>
 <div class="mui-content">
-    <div class="mui-card" style="margin: 15px 0px;">
-        <ul class="mui-table-view mui-table-view-chevron">
-            <li class="mui-table-view-cell mui-collapse">
-                <a class="mui-navigate-right" href="#">广发银行 | 622***8848  <span style="float: right"> 余额:100000</span></a>
-
-                <ul class="mui-table-view mui-table-view-chevron">
-                    <li class="mui-table-view-cell">
-                        <div style="float:left;width:30%;"><label>2020-02-21</label>:</div>
-                        <div style="float:left;"><label><span>买菜</span></label></div>
-                        <div style="float:right;"><span class="mui-text-right" style="color:red;">-120.32</span></div>
-                    </li>
-                    <li class="mui-table-view-cell">
-                        <div style="float:left;width:30%;"><label>2020-02-20</label>:</div>
-                        <div style="float:left;"><label><span>火腿肠丘比酱</span></label></div>
-                        <div style="float:right;"><span class="mui-text-right" style="color:red;">-20.32</span></div>
-                    </li>
-                    <li class="mui-table-view-cell">
-                        <div style="float:left;width:30%;"><label>2020-02-19</label>:</div>
-                        <div style="float:left;"><label><span>买菜</span></label></div>
-                        <div style="float:right;"><span class="mui-text-right" style="color:green;">+16020.32</span></div>
-                    </li>
-                    </li>
-                </ul>
-            </li>
-        </ul>
-    </div>
-
-    <div class="mui-card" style="margin: 15px 0px;">
-        <ul class="mui-table-view mui-table-view-chevron">
-            <li class="mui-table-view-cell mui-collapse"><a class="mui-navigate-right" href="#">支付宝 | 18310120297</a>
-                <ul class="mui-table-view mui-table-view-chevron">
-                    <li class="mui-table-view-cell"><a class="" href="#">iOS</a>
-                    </li>
-                    <li class="mui-table-view-cell"><a class="" href="#">Android</a>
-                    </li>
-                    <li class="mui-table-view-cell"><a class="" href="#">HTML5</a>
-                    </li>
-                </ul>
-            </li>
-        </ul>
-    </div>
-
-    <div class="mui-card" style="margin: 15px 0px;">
-        <ul class="mui-table-view mui-table-view-chevron">
-            <li class="mui-table-view-cell mui-collapse"><a class="mui-navigate-right" href="#">廊坊银行 | 63344423456234</a>
-                <ul class="mui-table-view mui-table-view-chevron">
-                    <li class="mui-table-view-cell"><a class="" href="#">iOS</a>
-                    </li>
-                    <li class="mui-table-view-cell"><a class="" href="#">Android</a>
-                    </li>
-                    <li class="mui-table-view-cell"><a class="" href="#">HTML5</a>
-                    </li>
-                </ul>
-            </li>
-        </ul>
-    </div>
-
-    <div class="mui-card" style="margin: 15px 0px;">
-        <ul class="mui-table-view mui-table-view-chevron">
-            <li class="mui-table-view-cell mui-collapse"><a class="mui-navigate-right" href="#">网商银行 | 64234563344234</a>
-                <ul class="mui-table-view mui-table-view-chevron">
-                    <li class="mui-table-view-cell"><a class="" href="#">iOS</a>
-                    </li>
-                    <li class="mui-table-view-cell"><a class="" href="#">Android</a>
-                    </li>
-                    <li class="mui-table-view-cell"><a class="" href="#">HTML5</a>
-                    </li>
-                </ul>
-            </li>
-        </ul>
-    </div>
 
 </div>
 <!------------------------------------------>
 <nav class="mui-bar mui-bar-tab">
-    <a class="mui-tab-item mui-active" href="#tabbar">
-        <span class="mui-icon mui-icon-home"></span>
-        <span class="mui-tab-label">首页</span>
+    <a class="mui-tab-item" href="./add.html">
+        <span class="mui-icon mui-icon-plus"></span>
+        <span class="mui-tab-label">记账</span>
     </a>
-    <a class="mui-tab-item" href="#tabbar-with-chat">
-        <span class="mui-icon mui-icon-email"><span class="mui-badge">9</span></span>
-        <span class="mui-tab-label">消息</span>
-    </a>
-    <a class="mui-tab-item" href="#tabbar-with-contact">
-        <span class="mui-icon mui-icon-contact"></span>
-        <span class="mui-tab-label">通讯录</span>
-    </a>
-    <a class="mui-tab-item" href="#tabbar-with-map">
+
+    <a class="mui-tab-item"  href="./setting.html">
         <span class="mui-icon mui-icon-gear"></span>
         <span class="mui-tab-label">设置</span>
     </a>
 </nav>
 
-<script src="./js/mui.js"></script>
+<script src="./js/mui.min.js"></script>
+<script src="./js/common.js"></script>
+<script src="./js/jQuery.min.js"></script>
 <script>
-    mui.init({
-        swipeBack:true //启用右滑关闭功能
-    });
+
+    var totalmoney = 0;
+    $(function(){
+        $.ajax({
+            url:'./rest/list',
+            type:'POST',
+            beforeSend:function(){
+
+            },
+            success:function(result){
+                var accounts=JSON.parse(result);
+                for(var i=0;i<accounts.length;i++){
+                    var accname = accounts[i].accname; //账户中文名
+                    var account = accounts[i].account; //账户账号
+                    var balance = accounts[i].balance; //余额
+                    var prop = accounts[i].prop;       //账户类型
+                    if(prop==1){
+                        totalmoney+=balance*100;
+                    }else{
+                        totalmoney-=balance*100;
+                    }
+                               //计算总余额
+                    if(account.length>7){
+                        var startacc=account.substr(0,3);
+                        var midacc="***";
+                        var endacc=account.substr(account.length-4);
+                        account="".concat(startacc).concat(midacc).concat(endacc);
+                    }
+
+                    var strdetail ='';
+                    var deitem = accounts[i].beanWaterList;
+                    //拼接详情信息
+                    for(var j =0;j<deitem.length;j++){
+                        if(deitem[j].trtype){
+
+                            var color = '';
+                            var zhengfu = '';
+                            if(prop=="1"){
+                                color= deitem[j].trtype==0?"red":"green";
+                                zhengfu =deitem[j].trtype==0?"-":"+";
+                            }else{
+                                color=  deitem[j].trtype==1?"red":"green";
+                                zhengfu = deitem[j].trtype==1?"-":"+";
+                            }
+
+                            strdetail+='<li class="mui-table-view-cell">'+
+                                '<div style="float:left;width:30%;"><label>'+new Date(deitem[j].updatetime).Format('yyyy-MM-dd')+'</label>:</div>'+
+                                '<div style="float:left;"><label><span>'+(deitem[j].remark==undefined?"":deitem[j].remark)+'</span></label></div>'+
+                                '<div style="float:right;"><span class="mui-text-right" style="color:'+color+';">'+zhengfu+'  '+deitem[j].trnum+'</span></div>'+
+                                '</li>'
+                        }
+                    }
+
+                    //拼接基本信息
+                    var cardhtml =
+                        '<div class="mui-card" style="margin: 15px 0px;">'+
+                        '<ul class="mui-table-view mui-table-view-chevron">'+
+                        '<li class="mui-table-view-cell mui-collapse">'+
+                        '<a class="mui-navigate-right" href="#"> '+(prop==1?"(资产)":"(负债)")+' '+accname+' | '+account+'  <span style="float: right"> 余额:'+balance+'</span></a>'+
+                        '<ul class="mui-table-view mui-table-view-chevron">'+strdetail+
+                        '</ul>'+
+                        '</div>';
+                    $(".mui-content").append(cardhtml);
+
+                }
+                var finalmoney = totalmoney/100;
+                $("#total").text(finalmoney);
+                if(finalmoney<0){
+                    $("#total").addClass("rd");
+                }else{
+                    $("#total").addClass("gr");
+                }
+
+            },
+            error:function(){
+                mui.toast("网络错误");
+            }
+        })
+    })
 </script>
 </body>
 

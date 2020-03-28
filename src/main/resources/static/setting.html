@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>设置账户</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <title>设置账户</title>
+
+    <!--标准mui.css-->
+    <link rel="stylesheet" href="./css/mui.css">
+</head>
+<body>
+<header class="mui-bar mui-bar-nav">
+    <!--<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>-->
+    <button class="mui-action-back mui-btn mui-btn-blue mui-btn-link mui-btn-nav mui-pull-left"><span class="mui-icon mui-icon-left-nav"></span>返回</button>
+    <h1 class="mui-title">设置账户</h1>
+</header>
+<div class="mui-content">
+    <button type="button" class="mui-btn mui-btn-primary mui-btn-block mui-icon  mui-right" style="margin-top: 20px;" onclick="location.href='./detail.html'">新增账户</button>
+</div>
+<div class="mui-card" style="margin: 15px 0px;">
+    <!--<ul class="mui-table-view mui-table-view-chevron">
+        <li class="mui-table-view-cell mui-collapse"><a class="mui-navigate-right" href="#">支付宝 | 18310120297</a>
+            <ul class="mui-table-view mui-table-view-chevron">
+                <li class="mui-table-view-cell"><a class="" href="#">iOS</a>
+                </li>
+                <li class="mui-table-view-cell"><a class="" href="#">Android</a>
+                </li>
+                <li class="mui-table-view-cell"><a class="" href="#">HTML5</a>
+                </li>
+            </ul>
+        </li>
+    </ul>-->
+</div>
+<script src="./js/mui.min.js"></script>
+<script src="./js/common.js"></script>
+<script src="./js/jQuery.min.js"></script>
+<script>
+    /*accname: "网商银行"
+    account: "62211122222"
+    aid: 2
+    balance: 0
+    createtime: 1584921600000
+    mtype: "CNY"
+    operater: "李四"
+    owner: "张三"
+    prop: "1"
+    remark: "1"
+    updatetime: 1584921600000*/
+    $(function(){
+        $.ajax({
+            url:'./rest/account',
+            type:'POST',
+            beforeSend:function(){
+
+            },
+            success:function(result){
+                var restobj=JSON.parse(result);
+
+                for(var i=0;i<restobj.length;i++){
+                    var account = '';
+                    account +=
+                        '<ul class="mui-table-view mui-table-view-chevron">'+
+                        '<li class="mui-table-view-cell mui-collapse"><a class="mui-navigate-right" href="#">'+restobj[i].accname +' | '+ restobj[i].account+'</a>'+
+                        '<ul class="mui-table-view mui-table-view-chevron">'+
+                        '<li class="mui-table-view-cell"><a class="" href="#">创建时间：'+(new Date(restobj[i].createtime).Format('yyyy-MM-dd'))+'</a></li>'+
+                        '<li class="mui-table-view-cell"><a class="" href="#">账户类型：'+(restobj[i].prop==1?"资产":"负债")+'</a></li>'+
+                        '<li class="mui-table-view-cell"><a class="" href="#">货币类型：'+restobj[i].mtype+'</a></li>'+
+                        '<li class="mui-table-view-cell"><a class="" href="#">所有者：'+restobj[i].owner+'</a></li>'+
+                        '<li class="mui-table-view-cell"><a class="" href="#">备注：'+restobj[i].remark+'</a></li>'+
+                        '<li class="mui-table-view-cell" onclick=\'del(\"'+restobj[i].aid+'\")\'><a class="" href="#" style="color:red;border-bottom: 1px solid #ccc">删除该账户</a></li>'+
+                        '</ul>'+
+                        '</li>'+
+                        '</ul>';
+                    $(".mui-card").append(account);
+                }
+
+            },
+            error:function(){
+
+            }
+        })
+    });
+</script>
+<script>
+var del = function(id){
+
+    var btnArray = ['是','否'];
+    mui.confirm('是否要删除，确认？', '账户删除', btnArray, function(e) {
+        if (e.index == 0) {
+            $.ajax({
+                url:'./rest/delaccount',
+                method:'POST',
+                data:{"id":id},
+                success:function(){
+                    mui.toast("已删除！");
+                    setTimeout(function(){
+                        location.reload();
+                    },1000);
+                },
+                error:function () {
+
+                }
+            });
+        }
+    })
+}
+</script>
+</body>
+</html>
