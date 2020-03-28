@@ -1,0 +1,9 @@
+server:
+  servlet:
+    context-path: /account
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://xxxx:3306/account?useSSL=false&serverTimezone=UTC&useUnicode=true&characterEncoding=UTF-8
+    username: root
+    password: xxxx
