@@ -24,6 +24,12 @@ import java.util.Map;
 public class ControllerAccount {
     @Autowired
     private ServiceDataAccount serviceDataAccount;
+
+    @RequestMapping("/doLogin")
+    public String dologin(){
+
+        return "redirect:/index.html";
+    }
     @RequestMapping("/list")
     public String list(){
         List<BeanWaterVO> accountlist = serviceDataAccount.queryAllAccounts();

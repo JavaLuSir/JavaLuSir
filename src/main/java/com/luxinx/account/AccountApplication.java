@@ -7,7 +7,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 @SpringBootApplication
-@ComponentScan(basePackages = {"com.luxinx.**.service","com.luxinx.**.controller"})
+@ComponentScan(basePackages = {"com.luxinx.**.service","com.luxinx.**.controller","com.luxinx.config"})
 public class AccountApplication {
 
     public static void main(String[] args) {
