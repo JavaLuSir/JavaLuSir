@@ -46,6 +46,7 @@
 
     var totalmoney = 0;
     $(function(){
+        mui.init();
         $.ajax({
             url:'./rest/list',
             type:'POST',
@@ -88,10 +89,15 @@
                                 zhengfu = deitem[j].trtype==1?"-":"+";
                             }
 
-                            strdetail+='<li class="mui-table-view-cell">'+
+                            strdetail+='<li class="mui-table-view-cell" value="'+deitem[j].wid+'">'+
+                                '<div class="mui-slider-right mui-disabled">'+
+                                '<a class="mui-btn mui-btn-red">删除</a>'+
+                                '</div>'+
+                                '<div class="mui-slider-handle mui-table">' +
                                 '<div style="float:left;width:30%;"><label>'+new Date(deitem[j].updatetime).Format('yyyy-MM-dd')+'</label>:</div>'+
                                 '<div style="float:left;"><label><span>'+(deitem[j].remark==undefined?"":deitem[j].remark)+'</span></label></div>'+
-                                '<div style="float:right;"><span class="mui-text-right" style="color:'+color+';">'+zhengfu+'  '+deitem[j].trnum+'</span></div>'+
+                                '<div style="float:right;"><span class="mui-text-right" style="color:'+color+';">'+zhengfu+'  '+number_format(deitem[j].trnum,2,".",",")+'</span></div>'+
+                                '</div>'+
                                 '</li>'
                         }
                     }
@@ -101,21 +107,54 @@
                         '<div class="mui-card" style="margin: 15px 0px;">'+
                         '<ul class="mui-table-view mui-table-view-chevron">'+
                         '<li class="mui-table-view-cell mui-collapse">'+
-                        '<a class="mui-navigate-right" href="#"> '+(prop==1?"(资产)":"(负债)")+' '+accname+' | '+account+'  <span style="float: right"> 余额:'+balance+'</span></a>'+
+                        '<a class="mui-navigate-right" href="#"> '+(prop==1?"(资产)":"(负债)")+' '+accname+' | '+account+'  <span style="float: right"> 余额:'+number_format(balance,2,".",",")+'</span></a>'+
                         '<ul class="mui-table-view mui-table-view-chevron">'+strdetail+
                         '</ul>'+
                         '</div>';
                     $(".mui-content").append(cardhtml);
 
                 }
+                //设置总金额
                 var finalmoney = totalmoney/100;
-                $("#total").text(finalmoney);
+                $("#total").text(number_format(finalmoney,2,".",","));//格式化成两位小数
                 if(finalmoney<0){
                     $("#total").addClass("rd");
                 }else{
                     $("#total").addClass("gr");
                 }
+                var btnArray = ['确认', '取消'];
+                //第二个demo，向左拖拽后显示操作图标，释放后自动触发的业务逻辑
+                $('.mui-table-view-cell').on('slideleft', '.mui-table-view-cell', function(event) {
+                    var elem = this;
+                    mui.confirm('确认删除该条记录？', '删除', btnArray, function(e) {
 
+                        if (e.index == 0) {
+                            $.ajax({
+                                url:'./rest/deldetail',
+                                type:'POST',
+                                data:{"id":elem.value},
+                                dataType:'json',
+                                success:function(result){
+                                    if(result&&result.code=='0'){
+                                        elem.parentNode.removeChild(elem);
+                                        mui.toast("已删除!");
+                                    }else{
+                                        mui.toast("删除失败！");
+                                    }
+                                },
+                                error:function(){
+                                    mui.toast("网络错误");
+                                }
+
+                            })
+
+                        } else {
+                            setTimeout(function() {
+                                mui.swipeoutClose(elem);
+                            }, 0);
+                        }
+                    });
+                });
             },
             error:function(){
                 mui.toast("网络错误");

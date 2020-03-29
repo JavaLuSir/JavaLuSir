@@ -37,7 +37,11 @@ public interface ServiceDataAccount {
      * @return {code:0,"msg":"成功！"}  0成功；-1失败；
      */
     String delAccount(String id);
-
+    /**
+     * 删除账户信息
+     * @return {code:0,"msg":"成功！"}  0成功；-1失败；
+     */
+    String delDetail(String id);
     /**
      * 增加消费明细
      * @param param 消费明细

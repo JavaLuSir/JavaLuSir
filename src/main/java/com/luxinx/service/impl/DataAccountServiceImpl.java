@@ -29,7 +29,7 @@ public class DataAccountServiceImpl implements ServiceDataAccount {
     public List<BeanWaterVO> queryAllAccounts() {
 
         ResultSetExtractor rset = new RowMapperResultSetExtractor(new BeanWater());
-        String sql = "SELECT T.AID,T.PROP,T.OWNER,T.ACCNAME,T.ACCOUNT,T.BALANCE,T.MTYPE,W.REMARK,T.OPERATER,W.AID,W.TRDATE TRDATE,W.TRADEKIND,W.TRTYPE,W.TRNUM,W.CREATETIME CREATETIME,W.UPDATETIME UPDATETIME FROM T_ACCOUNT T LEFT JOIN T_WATER W on T.AID=W.AID AND W.DEL='0' WHERE T.IFUSE='0' order by CREATETIME DESC";
+        String sql = "SELECT T.AID,T.PROP,T.OWNER,T.ACCNAME,T.ACCOUNT,T.BALANCE,T.MTYPE,W.REMARK,T.OPERATER,W.AID,W.TRDATE,W.WID,W.TRADEKIND,W.TRTYPE,W.TRNUM,W.CREATETIME CREATETIME,W.UPDATETIME UPDATETIME FROM T_ACCOUNT T LEFT JOIN T_WATER W on T.AID=W.AID AND W.DEL='0' WHERE T.IFUSE='0' order by CREATETIME DESC";
         List<BeanWater> result = (List<BeanWater>) jdbcTemplate.query(sql, rset);
 
         return BeanWater.toVO(result);
@@ -72,6 +72,13 @@ public class DataAccountServiceImpl implements ServiceDataAccount {
     @Override
     public String delAccount(String id) {
         String delaccount = "UPDATE T_ACCOUNT SET IFUSE='-1' WHERE AID=?";
+        jdbcTemplate.update(delaccount, id);
+        return "";
+    }
+
+    @Override
+    public String delDetail(String id) {
+        String delaccount = "UPDATE T_WATER SET DEL='-1' WHERE WID=?";
         jdbcTemplate.update(delaccount, id);
         return "";
     }

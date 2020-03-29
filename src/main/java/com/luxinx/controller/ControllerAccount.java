@@ -26,38 +26,54 @@ public class ControllerAccount {
     private ServiceDataAccount serviceDataAccount;
 
     @RequestMapping("/doLogin")
-    public String dologin(){
+    public String dologin() {
 
         return "redirect:/index.html";
     }
+
     @RequestMapping("/list")
-    public String list(){
+    public String list() {
         List<BeanWaterVO> accountlist = serviceDataAccount.queryAllAccounts();
         return JSONObject.toJSONString(accountlist);
     }
+
     @RequestMapping("/account")
-    public String account(){
+    public String account() {
         List<BeanAccount> accountlist = serviceDataAccount.queryAccount();
         return JSONObject.toJSONString(accountlist);
     }
+
     @RequestMapping("/addaccount")
-    public String addaccount(@RequestBody Map<String,String> reqparam){
+    public String addaccount(@RequestBody Map<String, String> reqparam) {
         Map<String, String> resultmap = serviceDataAccount.addAccount(reqparam);
 
         return JSONObject.toJSONString(resultmap);
     }
+
     @RequestMapping("/delaccount")
-    public String delaccount(@RequestParam String id){
+    public String delaccount(@RequestParam String id) {
         serviceDataAccount.delAccount(id);
         return "";
     }
+
+    @RequestMapping("/deldetail")
+    public String deldetail(@RequestParam String id) {
+        System.out.println(id);
+        serviceDataAccount.delDetail(id);
+        Map<String, String> result = new HashMap<>();
+        result.put("code", "0");
+        result.put("msg", "操作成功");
+        return JSONObject.toJSONString(result);
+    }
+
     @RequestMapping("/adddetail")
-    public String adddetail(@RequestBody Map<String,String> reqparam){
+    public String adddetail(@RequestBody Map<String, String> reqparam) {
         Map<String, String> result = serviceDataAccount.addDetail(reqparam);
         return JSONObject.toJSONString(result);
     }
+
     @RequestMapping("/querykind")
-    public String querykind(){
+    public String querykind() {
         List<Map<String, Object>> result = serviceDataAccount.queryKind();
         return JSONObject.toJSONString(result);
     }

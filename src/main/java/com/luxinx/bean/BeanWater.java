@@ -5,6 +5,7 @@ import org.springframework.jdbc.core.RowMapper;
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.DecimalFormat;
 import java.util.*;
 
 /**
@@ -132,6 +133,9 @@ public class BeanWater implements RowMapper {
     @Override
     public Object mapRow(ResultSet resultSet, int i) throws SQLException {
 
+        //格式化金额
+        DecimalFormat decimalFormat = new DecimalFormat("###,###.00");
+
         BeanAccount acount = new BeanAccount();
         acount.setAid(resultSet.getInt("AID"));
         acount.setProp(resultSet.getString("PROP"));
@@ -147,6 +151,7 @@ public class BeanWater implements RowMapper {
 
         BeanWater beanWater = new BeanWater();
         beanWater.setAid(resultSet.getInt("AID"));
+        beanWater.setWid(resultSet.getInt("WID"));
         beanWater.setTrdate( resultSet.getDate("TRDATE"));
         beanWater.setTradekind( resultSet.getString("TRADEKIND"));
         beanWater.setTrtype( resultSet.getString("TRTYPE"));
@@ -154,6 +159,7 @@ public class BeanWater implements RowMapper {
         beanWater.setCreatetime( resultSet.getDate("CREATETIME"));
         beanWater.setUpdatetime( resultSet.getDate("UPDATETIME"));
         beanWater.setTrnum(resultSet.getBigDecimal("TRNUM"));
+
         beanWater.setBeanAccount(acount);
         return beanWater;
     }
@@ -175,8 +181,8 @@ public class BeanWater implements RowMapper {
                 water.setWid(bt.getWid());
                 water.setWid(bt.getWid());
                 water.setRemark(bt.getRemark());
-                List<BeanWater> wlist = bvo.getBeanWaterList();
-                wlist.add(water);
+                bvo.getBeanWaterList().add(water);
+
             }else {
                 //-----------------------------设置流水的值
                 List<BeanWater> wlist = new ArrayList<>();
