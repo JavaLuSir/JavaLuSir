@@ -58,7 +58,6 @@ public class ControllerAccount {
 
     @RequestMapping("/deldetail")
     public String deldetail(@RequestParam String id) {
-        System.out.println(id);
         serviceDataAccount.delDetail(id);
         Map<String, String> result = new HashMap<>();
         result.put("code", "0");

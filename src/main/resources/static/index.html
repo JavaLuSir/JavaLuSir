@@ -128,14 +128,14 @@
                     var elem = this;
                     mui.confirm('确认删除该条记录？', '删除', btnArray, function(e) {
 
-                        if (e.index == 0) {
+                        if (e.index === 0) {
                             $.ajax({
                                 url:'./rest/deldetail',
                                 type:'POST',
                                 data:{"id":elem.value},
                                 dataType:'json',
                                 success:function(result){
-                                    if(result&&result.code=='0'){
+                                    if(result&&result.code==='0'){
                                         elem.parentNode.removeChild(elem);
                                         mui.toast("已删除!");
                                     }else{
