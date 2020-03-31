@@ -46,7 +46,7 @@
             <input  id="showOppPicker" readonly type="text" name="OPPID" data-options="" class="mui-input-clear"   placeholder="请选择"  data-input-clear="3"><span class="mui-icon mui-icon-clear mui-hidden"></span>
         </div>
         <div class="mui-button-row" >
-            <button type="button" class="mui-btn-primary" onclick="addDetail()" data-loading-icon-position="right">确认</button>&nbsp;&nbsp;
+            <button type="button" class="mui-btn mui-btn-primary" data-loading-text="提交中" data-loading-icon-position="right">确认</button>&nbsp;&nbsp;
         </div>
     </form>
 </div>
@@ -60,7 +60,12 @@
 <script>
     var bankdata = [];
     var kinddata = [];
-
+   /* mui(document.body).on('tap', '.mui-btn', function(e) {
+        mui(this).button('loading');
+        setTimeout(function() {
+            mui(this).button('reset');
+        }.bind(this), 2000);
+    });*/
     var checkform = function(param){
         for(var k in param){
             if(param[k]==''){
@@ -71,6 +76,7 @@
         return true;
     };
     $(function(){
+        $("button").bind('click',addDetail);
         $.ajax({
             url:'./rest/account',
             type:'POST',
@@ -101,7 +107,9 @@
 
     });
 
-    var addDetail = function(){
+    var addDetail = function(e){
+        $("button").unbind('click');
+        $(e).attr("disable",true);
         var formobj = $("input[name]");
         var accountparam = {};
         for(var i=0;i<formobj.length;i++){
