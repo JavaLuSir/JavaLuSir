@@ -2,6 +2,8 @@ package com.luxinx.config;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -31,6 +33,11 @@ import java.io.PrintWriter;
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
+    @Value("${account.username}")
+    private String username;
+    @Value("${account.password}")
+    private String password;
+
     /**
      * 将用户设置在内存中
      * @param auth
@@ -41,7 +48,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         // 在内存中配置用户，配置多个用户调用`and()`方法
         auth.inMemoryAuthentication()
                 .passwordEncoder(passwordEncoder()) // 指定加密方式
-                .withUser("kou").password(passwordEncoder().encode("koujinju123")).roles("admin");
+                .withUser(username).password(passwordEncoder().encode(password)).roles("admin");
     }
 
 
