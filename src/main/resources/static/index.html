@@ -48,6 +48,7 @@
 <script src="./js/common.js"></script>
 <script src="./js/jQuery.min.js"></script>
 <script>
+    var funds_cn='余额：';
     var count = 0;
     function pullupRefresh() {
         setTimeout(function() {
@@ -100,7 +101,7 @@
             }
         })
     }
-    function adddelbtn(){
+    function binddelbtn(){
         var btnArray = ['确认', '取消'];
         //第二个demo，向左拖拽后显示操作图标，释放后自动触发的业务逻辑
         $('.mui-table-view-cell').on('slideleft', '.mui-table-view-cell', function(event) {
@@ -115,6 +116,10 @@
                         dataType:'json',
                         success:function(result){
                             if(result&&result.code==='0'){
+                                if(result.funds){
+                                    $(elem).parents('.mui-active').find(".mui-navigate-right .funds").text(funds_cn+number_format(result.funds,2,".",","))
+                                }
+
                                 elem.parentNode.removeChild(elem);
                                 freshtotal();
                                 mui.toast("已删除!");
@@ -136,7 +141,7 @@
             });
         });
     }
-var freshData = function (){
+var initData = function (){
         var totalmoney = 0;
 
         $.ajax({
@@ -197,14 +202,14 @@ var freshData = function (){
                             '<div class="mui-card" style="margin: 15px 0px;">'+
                             '<ul class="mui-table-view mui-table-view-chevron">'+
                             '<li class="mui-table-view-cell mui-collapse">'+
-                            '<a class="mui-navigate-right" href="#"> '+(prop==1?"(资产)":"(负债)")+' '+accname+' | '+account+'  <span style="float: right"> 余额:'+number_format(balance,2,".",",")+'</span></a>'+
+                            '<a class="mui-navigate-right" href="#"> '+(prop==1?"(资产)":"(负债)")+' '+accname+' | '+account+'  <span class="funds" style="float: right"> '+funds_cn+number_format(balance,2,".",",")+'</span></a>'+
                             '<ul class="mui-table-view mui-table-view-chevron">'+strdetail+
                             '</ul>'+
                             '</div>';
 
                         $("#container").append(cardhtml);
                     }
-                adddelbtn();
+                binddelbtn();
 
                 //设置总金额
                 var finalmoney = totalmoney/100;
@@ -236,7 +241,7 @@ var freshData = function (){
                 }
             }
         });
-        freshData();
+        initData();
     })
 </script>
 </body>

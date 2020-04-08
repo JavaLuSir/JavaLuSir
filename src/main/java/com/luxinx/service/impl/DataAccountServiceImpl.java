@@ -100,7 +100,7 @@ public class DataAccountServiceImpl implements ServiceDataAccount {
         String delaccount = "DELETE FROM T_WATER WHERE WID=?";
         jdbcTemplate.update(delaccount, id);
         jdbcTemplate.update("UPDATE T_ACCOUNT SET BALANCE =? WHERE AID=?",resultBalance,aid);
-        return "";
+        return resultBalance.toString();
     }
 
     @Override

@@ -58,9 +58,10 @@ public class ControllerAccount {
 
     @RequestMapping("/deldetail")
     public String deldetail(@RequestParam String id) {
-        serviceDataAccount.delDetail(id);
+        String resultBalance = serviceDataAccount.delDetail(id);
         Map<String, String> result = new HashMap<>();
         result.put("code", "0");
+        result.put("funds", resultBalance);
         result.put("msg", "操作成功");
         return JSONObject.toJSONString(result);
     }

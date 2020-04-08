@@ -39,7 +39,7 @@ public interface ServiceDataAccount {
     String delAccount(String id);
     /**
      * 删除账户信息
-     * @return {code:0,"msg":"成功！"}  0成功；-1失败；
+     * @return {code:0,"funds":"12（余额）","msg":"成功！"}  0成功；-1失败；
      */
     String delDetail(String id);
     /**
