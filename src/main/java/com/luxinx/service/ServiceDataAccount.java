@@ -54,6 +54,15 @@ public interface ServiceDataAccount {
      * @return
      */
     List<Map<String,Object>> queryKind();
-
+    /**
+     * 查询月份
+     * @return
+     */
+    List<Map<String,Object>> queryMonth();
+    /**
+     * 查询月份
+     * @return
+     */
+    List<Map<String,Object>> queryMonthItem(String datestr);
 
 }

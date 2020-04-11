@@ -29,7 +29,7 @@ public class DataAccountServiceImpl implements ServiceDataAccount {
     public List<BeanWaterVO> queryAllAccounts() {
 
         ResultSetExtractor rset = new RowMapperResultSetExtractor(new BeanWater());
-        String sql = "SELECT T.AID,T.PROP,T.OWNER,T.ACCNAME,T.ACCOUNT,T.BALANCE,T.MTYPE,W.REMARK,T.OPERATER,W.AID,W.TRDATE,W.WID,W.TRADEKIND,W.TRTYPE,W.TRNUM,W.CREATETIME CREATETIME,W.UPDATETIME UPDATETIME FROM T_ACCOUNT T LEFT JOIN T_WATER W on T.AID=W.AID AND W.DEL='0' WHERE T.IFUSE='0' order by ORDERNUM";
+        String sql = "SELECT T.AID,T.PROP,T.OWNER,T.ACCNAME,T.ACCOUNT,T.BALANCE,T.MTYPE,W.REMARK,T.OPERATER,W.AID,W.TRDATE,W.WID,W.TRADEKIND,W.TRTYPE,W.TRNUM,W.CREATETIME CREATETIME,W.UPDATETIME UPDATETIME FROM T_ACCOUNT T LEFT JOIN T_WATER W on T.AID=W.AID AND W.DEL='0' WHERE T.IFUSE='0' order by ORDERNUM asc,UPDATETIME desc";
         List<BeanWater> result = (List<BeanWater>) jdbcTemplate.query(sql, rset);
 
         return BeanWater.toVO(result);
@@ -143,6 +143,18 @@ public class DataAccountServiceImpl implements ServiceDataAccount {
         String sqlKind = "SELECT DICKEY VALUE,DICVAL TEXT FROM T_DICT WHERE TEAM='A' ORDER BY ORDERNUM";
         List<Map<String, Object>> querdict = jdbcTemplate.queryForList(sqlKind);
         return querdict;
+    }
+
+    @Override
+    public List<Map<String, Object>> queryMonth() {
+        String sqlMonth = "select DISTINCT DATE_FORMAT(TRDATE,'%Y-%m') months from T_WATER order by months desc";
+        return jdbcTemplate.queryForList(sqlMonth);
+    }
+
+    @Override
+    public List<Map<String, Object>> queryMonthItem(String datestr) {
+        String sqlMonthItem = "select wid,trdate,remark,trnum,trtype from T_WATER WHERE  DATE_FORMAT(TRDATE,'%Y-%m') =? order by UPDATETIME desc";
+        return jdbcTemplate.queryForList(sqlMonthItem,datestr);
     }
 
     /**

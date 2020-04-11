@@ -77,4 +77,17 @@ public class ControllerAccount {
         List<Map<String, Object>> result = serviceDataAccount.queryKind();
         return JSONObject.toJSONString(result);
     }
+
+    @RequestMapping("/querymonth")
+    public String querymonth(){
+        List<Map<String, Object>> monthList = serviceDataAccount.queryMonth();
+        return JSONObject.toJSONString(monthList);
+    }
+
+    @RequestMapping("/querymonthitem")
+    public String querymonthitem(@RequestParam String datestr){
+        List<Map<String, Object>> monthList = serviceDataAccount.queryMonthItem(datestr);
+        return JSONObject.toJSONString(monthList);
+    }
+
 }
