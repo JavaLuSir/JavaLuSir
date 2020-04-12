@@ -147,7 +147,7 @@ public class DataAccountServiceImpl implements ServiceDataAccount {
 
     @Override
     public List<Map<String, Object>> queryMonth() {
-        String sqlMonth = "select DISTINCT DATE_FORMAT(TRDATE,'%Y-%m') months from T_WATER order by months desc";
+        String sqlMonth = "select DATE_FORMAT(TRDATE,'%Y-%m') months,SUM(CASE TRTYPE WHEN 0 THEN -TRNUM ELSE TRNUM END) total from T_WATER GROUP BY months order by months desc\n";
         return jdbcTemplate.queryForList(sqlMonth);
     }
 

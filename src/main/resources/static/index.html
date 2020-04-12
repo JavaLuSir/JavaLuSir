@@ -35,10 +35,8 @@
 <header class="mui-bar mui-bar-nav">
     <h1 class="mui-title"><span id="total"></span></h1>
 </header>
-<div id="pullrefresh" class="mui-content mui-scroll-wrapper">
-    <div id="container" class="mui-content">
+<div id="container" class="mui-content">
 
-    </div>
 </div>
 <!------------------------------------------>
 <nav class="mui-bar mui-bar-tab">
@@ -61,12 +59,15 @@
 <script src="./js/mui.min.js"></script>
 <script src="./js/common.js"></script>
 <script src="./js/jQuery.min.js"></script>
+
 <script>
     var count = 0;
+    var funds_cn = "金额：";
+
     function binddelbtn() {
         var btnArray = ['确认', '取消'];
         //第二个demo，向左拖拽后显示操作图标，释放后自动触发的业务逻辑
-        $('.mui-table-view-cell').on('slideleft', '.mui-table-view-cell', function (event) {
+        $('.mui-table-view-cell').on('tap', '.mui-table-view-cell', function (event) {
             var elem = this;
             mui.confirm('确认删除该条记录？', '删除', btnArray, function (e) {
 
@@ -83,7 +84,7 @@
                                 }
 
                                 elem.parentNode.removeChild(elem);
-                                freshtotal();
+                                //freshtotal();
                                 mui.toast("已删除!");
                             } else {
                                 mui.toast("删除失败！");
@@ -103,44 +104,58 @@
             });
         });
     }
-    var querydetail = function(e){
-        if($(e).text()==''||$(e).children().length>0){
-            return;
-        }
-        $.ajax({
-            url:'./rest/querymonthitem',
-            type:'POST',
-            data: {"datestr": $(e).text()},
-            dataType:'json',
-            beforeSend:function () {
-                
-            },
-            success:function (result) {
-                var color = '';
-                var zhengfu = '';
-                var strdetail='<ul class="mui-table-view mui-table-view-chevron">';
-                //
-                for(var i=0;i<result.length;i++){
 
-                    color= result[i].trtype==0?"red":"green";
-                    zhengfu =result[i].trtype==0?"-":"+";
-
-
-                    strdetail+='<li class="mui-table-view-cell" value="'+result[i].wid+'">'+
-                        '<div class="mui-slider-right mui-disabled">'+
-                        '<a class="mui-btn mui-btn-red">删除</a>'+
-                        '</div>'+
-                        '<div class="mui-slider-handle mui-table">' +
-                        '<div style="float:left;width:30%;"><label>'+new Date(result[i].trdate).Format('yyyy-MM-dd')+'</label>:</div>'+
-                        '<div style="float:left;"><label><span>'+(result[i].remark==undefined?"":result[i].remark)+'</span></label></div>'+
-                        '<div style="float:right;"><span class="mui-text-right" style="color:'+color+';">'+zhengfu+'  '+number_format(result[i].trnum,2,".",",")+'</span></div>'+
-                        '</div>'+
-                        '</li>';
-                }
-                strdetail+='</ul>';
-                $(e).append(strdetail);
+    var bindquerydetail = function () {
+        $(".mui-navigate-right").on("tap", function (e) {
+            var datestr = '';
+            var contaobj = '';
+            if (!e.target.attributes['datestr']) {
+                datestr = e.target.parentElement.getAttribute("datestr");
+                contaobj = $(e.target.parentElement)
+            } else {
+                datestr = e.target.attributes['datestr'].value;
+                contaobj = $(e.target);
             }
+            if (contaobj.children().length > 1) {
+                return;
+            }
+            $.ajax({
+                url: './rest/querymonthitem',
+                type: 'POST',
+                data: {"datestr": datestr},
+                dataType: 'json',
+                beforeSend: function () {
+                },
+                success: function (result) {
+
+                    var color = '';
+                    var zhengfu = '';
+                    var strdetail = '<ul class="mui-table-view mui-table-view-chevron">';
+                    //
+                    for (var i = 0; i < result.length; i++) {
+
+                        color = result[i].trtype == 0 ? "red" : "green";
+                        zhengfu = result[i].trtype == 0 ? "-" : "+";
+
+
+                        strdetail += '<li class="mui-table-view-cell" value="' + result[i].wid + '">' +
+                            '<div class="mui-slider-right mui-disabled">' +
+                            '<a class="mui-btn mui-btn-red">删除</a>' +
+                            '</div>' +
+                            '<div class="mui-slider-handle mui-table">' +
+                            '<div style="float:left;width:30%;"><label>' + new Date(result[i].trdate).Format('yyyy-MM-dd') + '</label>:</div>' +
+                            '<div style="float:left;"><label><span>' + (result[i].remark == undefined ? "" : result[i].remark) + '</span></label></div>' +
+                            '<div style="float:right;"><span class="mui-text-right" style="color:' + color + ';">' + zhengfu + '  ' + number_format(result[i].trnum, 2, ".", ",") + '</span></div>' +
+                            '</div>' +
+                            '</li>';
+                    }
+                    strdetail += '</ul>';
+                    contaobj.append(strdetail);
+                }
+            });
         });
+
+
     }
     var initData = function () {
         var totalmoney = 0;
@@ -152,49 +167,26 @@
             beforeSend: function () {
             },
             success: function (result) {
+                if(!result||result.length==0){
+                    mui.toast("没有数据")
+                    return;
+                }
                 for (var i = 0; i < result.length; i++) {
                     //设置***
-
-                    var strdetail = '';
-                   /* var deitem = accounts[i].beanWaterList;
-                    //拼接详情信息
-                    for (var j = 0; j < deitem.length; j++) {
-                        if (deitem[j].trtype) {
-
-                            var color = '';
-                            var zhengfu = '';
-                            if (prop == "1") {
-                                color = deitem[j].trtype == 0 ? "red" : "green";
-                                zhengfu = deitem[j].trtype == 0 ? "-" : "+";
-                            } else {
-                                color = deitem[j].trtype == 1 ? "red" : "green";
-                                zhengfu = deitem[j].trtype == 1 ? "-" : "+";
-                            }
-
-                            strdetail += '<li class="mui-table-view-cell" value="' + deitem[j].wid + '">' +
-                                '<div class="mui-slider-right mui-disabled">' +
-                                '<a class="mui-btn mui-btn-red">删除</a>' +
-                                '</div>' +
-                                '<div class="mui-slider-handle mui-table">' +
-                                '<div style="float:left;width:30%;"><label>' + new Date(deitem[j].updatetime).Format('yyyy-MM-dd') + '</label>:</div>' +
-                                '<div style="float:left;"><label><span>' + (deitem[j].remark == undefined ? "" : deitem[j].remark) + '</span></label></div>' +
-                                '<div style="float:right;"><span class="mui-text-right" style="color:' + color + ';">' + zhengfu + '  ' + number_format(deitem[j].trnum, 2, ".", ",") + '</span></div>' +
-                                '</div>' +
-                                '</li>'
-                        }
-                    }*/
                     //拼接基本信息
                     var cardhtml =
                         '<div class="mui-card" style="margin: 15px 0px;">' +
                         '<ul class="mui-table-view mui-table-view-chevron">' +
                         '<li class="mui-table-view-cell mui-collapse">' +
-                        '<a class="mui-navigate-right" href="#" onclick="querydetail(this)">' + result[i].months +'</a>' +
+                        '<a class="mui-navigate-right" href="#" datestr="' + result[i].months + '">' + result[i].months + '<span class="funds" style="float: right"> ' + funds_cn + result[i].total.toString() + '</span></a>' +
 
                         '</div>';
 
                     $("#container").append(cardhtml);
                 }
                 binddelbtn();
+                bindquerydetail();
+
             },
             error: function () {
                 mui.toast("网络错误");
