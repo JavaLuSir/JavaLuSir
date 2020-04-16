@@ -52,16 +52,7 @@ public class DataAccountServiceImpl implements ServiceDataAccount {
         String remark = param.get("REMARK");
 
         String addaccount = "INSERT INTO T_ACCOUNT (PROP,OWNER,ACCNAME,ACCOUNT,BALANCE,REMARK,OPERATER,CREATETIME,UPDATETIME) VALUES (?,?,?,?,?,?,?,NOW(),NOW())";
-        /*PreparedStatementSetter setter = new ArgumentPreparedStatementSetter(new Object[]{prop,owner,accname,account,balance,remark});
-        try {
-            PreparedStatement stmt;
-            // stmt = jdbcTemplate.getDataSource().getConnection().prepareStatement();
-            PreparedStatementCreatorFactory creator = new PreparedStatementCreatorFactory(addaccount);
-            creator.newPreparedStatementCreator(listargs);
-            //jdbcTemplate.update();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }*/
+
         jdbcTemplate.update(addaccount, prop, owner, accname, account, balance, remark, "admin");
         Map<String, String> result = new HashMap<>();
         result.put("code", "0");
