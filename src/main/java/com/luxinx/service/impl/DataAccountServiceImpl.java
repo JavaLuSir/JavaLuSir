@@ -138,13 +138,15 @@ public class DataAccountServiceImpl implements ServiceDataAccount {
 
     @Override
     public List<Map<String, Object>> queryMonth() {
-        String sqlMonth = "select DATE_FORMAT(TRDATE,'%Y-%m') months,SUM(CASE TRTYPE WHEN 0 THEN -TRNUM ELSE TRNUM END) total from T_WATER GROUP BY months order by months desc\n";
+        //按月份统计的时候不记录负债账户的入金。只记录出金，资产户的出金入金都进行统计
+        String sqlMonth = "select DATE_FORMAT(TRDATE,'%Y-%m') months,SUM(CASE TRTYPE WHEN 0 THEN -TRNUM ELSE TRNUM END) total from T_WATER T LEFT JOIN T_ACCOUNT A on T.AID=A.AID WHERE (A.PROP='2' AND T.TRTYPE='0') or A.PROP='1' GROUP BY months order by months desc";
         return jdbcTemplate.queryForList(sqlMonth);
     }
 
     @Override
     public List<Map<String, Object>> queryMonthItem(String datestr) {
-        String sqlMonthItem = "select wid,trdate,remark,trnum,trtype from T_WATER WHERE  DATE_FORMAT(TRDATE,'%Y-%m') =? order by UPDATETIME desc";
+        //按月份统计的时候不记录负债账户的入金。只记录出金，资产户的出金入金都进行统计
+        String sqlMonthItem = "select wid,trdate,T.remark,trnum,trtype from T_WATER T LEFT JOIN T_ACCOUNT A ON T.AID=A.AID WHERE (A.PROP='2' AND T.TRTYPE='0') or A.PROP='1' and  DATE_FORMAT(TRDATE,'%Y-%m') =? order by T.UPDATETIME desc";
         return jdbcTemplate.queryForList(sqlMonthItem,datestr);
     }
 
