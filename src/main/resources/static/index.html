@@ -176,7 +176,7 @@
                     //拼接基本信息
                     var cardhtml =
                         '<div class="mui-card" style="margin: 15px 0px;">' +
-                        '<div style="text-align: right;border-bottom: 1px dotted;"><span style="color: green;margin-right: 20px;">收入：'+result[i].income+'</span><span style="color: red;margin-right: 20px;">支出：'+result[i].outcome+'</span></div>'+
+                        '<div style="text-align: right;border-bottom: 1px dotted;"><span style="color: green;margin-right: 20px;">收入：'+number_format(result[i].income, 2, ".", ",")+'</span><span style="color: red;margin-right: 20px;">支出：'+number_format(result[i].outcome, 2, ".", ",")+'</span></div>'+
                         '<ul class="mui-table-view mui-table-view-chevron">' +
                         '<li class="mui-table-view-cell mui-collapse">' +
                         '<a class="mui-navigate-right" style="padding-right:35px;" href="#" datestr="' + result[i].months + '">' + result[i].months + '<span class="funds" style="float: right"> ' + funds_cn + result[i].total.toString() + '</span></a>' +
