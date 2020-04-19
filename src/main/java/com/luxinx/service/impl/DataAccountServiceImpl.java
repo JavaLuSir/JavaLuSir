@@ -146,7 +146,7 @@ public class DataAccountServiceImpl implements ServiceDataAccount {
     @Override
     public List<Map<String, Object>> queryMonthItem(String datestr) {
         //按月份统计的时候不记录负债账户的入金。只记录出金，资产户的出金入金都进行统计
-        String sqlMonthItem = "select wid,trdate,T.remark,trnum,trtype from T_WATER T LEFT JOIN T_ACCOUNT A ON T.AID=A.AID WHERE (A.PROP='2' AND T.TRTYPE='0') or A.PROP='1' AND T.TRADEKIND<>00 and  DATE_FORMAT(TRDATE,'%Y-%m') =? order by T.UPDATETIME desc";
+        String sqlMonthItem = "select wid,trdate,T.remark,trnum,trtype from T_WATER T LEFT JOIN T_ACCOUNT A ON T.AID=A.AID WHERE ((A.PROP='2' AND T.TRTYPE='0') or A.PROP='1') AND T.TRADEKIND<>00 and  DATE_FORMAT(TRDATE,'%Y-%m') =? order by T.UPDATETIME desc";
         return jdbcTemplate.queryForList(sqlMonthItem,datestr);
     }
 
