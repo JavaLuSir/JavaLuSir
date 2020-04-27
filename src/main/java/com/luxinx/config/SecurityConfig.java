@@ -20,12 +20,16 @@ import org.springframework.security.web.authentication.AuthenticationFailureHand
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
+import org.springframework.security.web.authentication.rememberme.InMemoryTokenRepositoryImpl;
+import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
+import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 
 
 import javax.servlet.Filter;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.sql.DataSource;
 import java.io.IOException;
 import java.io.PrintWriter;
 
@@ -37,7 +41,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private String username;
     @Value("${account.password}")
     private String password;
-
+    @Autowired
+    private DataSource dataSource; // 数据源
     /**
      * 将用户设置在内存中
      * @param auth
@@ -72,6 +77,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .successHandler(new AuthenticationSuccessHandler() {
                     @Override
                     public void onAuthenticationSuccess(HttpServletRequest req, HttpServletResponse resp, Authentication authentication) throws IOException, ServletException {
+
                         resp.setContentType("application/json;charset=utf-8");
                         PrintWriter out = resp.getWriter();
                         resp.sendRedirect("../index.html");
@@ -105,7 +111,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .httpBasic()
                 .and()
-                .csrf().disable();
+                .csrf().disable().rememberMe()
+                .tokenRepository(persistentTokenRepository())
+                .tokenValiditySeconds(60 * 60 * 24 * 7);
+
+        // .tokenValiditySeconds(60 * 60 * 24 * 7);
     }
     @Override
     public void configure(WebSecurity web) throws Exception {
@@ -115,5 +125,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public PasswordEncoder passwordEncoder() {
         // BCryptPasswordEncoder：Spring Security 提供的加密工具，可快速实现加密加盐
         return new BCryptPasswordEncoder();
+    }
+    /**
+     * 持久化token
+     *
+     * Security中，默认是使用PersistentTokenRepository的子类InMemoryTokenRepositoryImpl，将token放在内存中
+     * 如果使用JdbcTokenRepositoryImpl，会创建表persistent_logins，将token持久化到数据库
+     */
+    @Bean
+    public PersistentTokenRepository persistentTokenRepository() {
+        JdbcTokenRepositoryImpl tokenRepository = new JdbcTokenRepositoryImpl();
+        tokenRepository.setDataSource(dataSource); // 设置数据源
+        //tokenRepository.setCreateTableOnStartup(true); // 启动创建表，创建成功后注释掉
+        return tokenRepository;
     }
 }
