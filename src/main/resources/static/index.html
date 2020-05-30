@@ -18,15 +18,12 @@
     * {
         touch-action: pan-y;
     }
-
     .rd {
         color: red;
     }
-
     .gr {
         color: green;
     }
-
     .mui-pull-bottom-pocket {
         height: 0px;
     }
@@ -127,7 +124,7 @@
                 beforeSend: function () {
                 },
                 success: function (result) {
-
+                    var accname = '';
                     var color = '';
                     var zhengfu = '';
                     var strdetail = '<ul class="mui-table-view mui-table-view-chevron">';
@@ -143,7 +140,7 @@
                             '<a class="mui-btn mui-btn-red">删除</a>' +
                             '</div>' +
                             '<div class="mui-slider-handle mui-table">' +
-                            '<div style="float:left;width:30%;"><label>' + new Date(result[i].trdate).Format('MM-dd') + '</label>:</div>' +
+                            '<div style="float:left;width:30%;"><label><span style="width:30px;">'+result[i].accname+'</span>|<span>' + new Date(result[i].trdate).Format('MM-dd') + '</span></label>:</div>' +
                             '<div style="float:left;"><label><span>' + (result[i].remark == undefined ? "" : result[i].remark) + '</span></label></div>' +
                             '<div style="float:right;"><span class="mui-text-right" style="color:' + color + ';">' + zhengfu + '  ' + number_format(result[i].trnum, 2, ".", ",") + '</span></div>' +
                             '</div>' +
