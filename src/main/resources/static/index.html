@@ -34,6 +34,13 @@
     .sp {
         margin-left:0px;
     }
+    .dt {
+        display: inline-block;
+        width:40px;
+    }
+    .rk{
+        display: inline-block;
+    }
 </style>
 <body>
 <header class="mui-bar mui-bar-nav">
@@ -147,8 +154,8 @@
                             '<a class="mui-btn mui-btn-red">删除</a>' +
                             '</div>' +
                             '<div class="mui-slider-handle mui-table">' +
-                            '<div style="float:left;width:30%;"><label><span class="acc">'+result[i].accname+'</span><span class="sp">|</span><span>' + new Date(result[i].trdate).Format('MM-dd') + '</span></label>:</div>' +
-                            '<div style="float:left;"><label><span>' + (result[i].remark == undefined ? "" : result[i].remark) + '</span></label></div>' +
+                            '<div style="float:left;width:120px;"><label><span class="acc">'+result[i].accname+'</span><span class="sp">|</span><span class="dt">' + new Date(result[i].trdate).Format('MM-dd') + '</span><span>:</span></label></div>' +
+                            '<div style="float:left;"><label><span class="rk">' + (result[i].remark == undefined ? "" : result[i].remark) + '</span></label></div>' +
                             '<div style="float:right;"><span class="mui-text-right" style="color:' + color + ';">' + zhengfu + '  ' + number_format(result[i].trnum, 2, ".", ",") + '</span></div>' +
                             '</div>' +
                             '</li>';
