@@ -24,14 +24,15 @@ import java.util.Map;
 public class DataAccountServiceImpl implements ServiceDataAccount {
     @Autowired
     private JdbcTemplate jdbcTemplate;
-
+    //这里缓存一下数据提升性能能
+    private List<BeanWater> result = null;
     @Override
     public List<BeanWaterVO> queryAllAccounts() {
-
-        ResultSetExtractor rset = new RowMapperResultSetExtractor(new BeanWater());
-        String sql = "SELECT T.AID,T.PROP,T.OWNER,T.ACCNAME,T.ACCOUNT,T.BALANCE,T.MTYPE,W.REMARK,T.OPERATER,W.AID,W.TRDATE,W.WID,W.TRADEKIND,W.TRTYPE,W.TRNUM,W.CREATETIME CREATETIME,W.UPDATETIME UPDATETIME FROM T_ACCOUNT T LEFT JOIN T_WATER W on T.AID=W.AID AND W.DEL='0' WHERE T.IFUSE='0' order by ORDERNUM asc,UPDATETIME desc";
-        List<BeanWater> result = (List<BeanWater>) jdbcTemplate.query(sql, rset);
-
+        if(result == null){
+            ResultSetExtractor rset = new RowMapperResultSetExtractor(new BeanWater());
+            String sql = "SELECT T.AID,T.PROP,T.OWNER,T.ACCNAME,T.ACCOUNT,T.BALANCE,T.MTYPE,W.REMARK,T.OPERATER,W.AID,W.TRDATE,W.WID,W.TRADEKIND,W.TRTYPE,W.TRNUM,W.CREATETIME CREATETIME,W.UPDATETIME UPDATETIME FROM T_ACCOUNT T LEFT JOIN T_WATER W on T.AID=W.AID AND W.DEL='0' WHERE T.IFUSE='0' order by ORDERNUM asc,UPDATETIME desc";
+            result = (List<BeanWater>) jdbcTemplate.query(sql, rset);
+        }
         return BeanWater.toVO(result);
     }
 
@@ -57,6 +58,7 @@ public class DataAccountServiceImpl implements ServiceDataAccount {
         Map<String, String> result = new HashMap<>();
         result.put("code", "0");
         result.put("msg", "创建成功");
+
         return result;
     }
 
@@ -71,6 +73,9 @@ public class DataAccountServiceImpl implements ServiceDataAccount {
     public String delDetail(String id) {
         String querydetail = "SELECT T.AID,T.PROP,W.WID,T.BALANCE,W.TRTYPE,W.TRNUM FROM T_ACCOUNT T LEFT JOIN T_WATER W ON T.AID = W.AID WHERE W.WID = ?";
         Map<String, Object> mapdetail = jdbcTemplate.queryForMap(querydetail, id);
+        if(mapdetail==null||mapdetail.isEmpty()){
+            return "";
+        }
         Long aid = (Long) mapdetail.get("AID");
         String prop = (String) mapdetail.get("PROP");
         BigDecimal balance = (BigDecimal) mapdetail.get("BALANCE");
@@ -96,6 +101,7 @@ public class DataAccountServiceImpl implements ServiceDataAccount {
 
     @Override
     public Map<String, String> addDetail(Map<String, String> param) {
+        refreshResult();
         String aid = param.get("AID");
         String trdate = param.get("TRDATE");
         String tradekind = param.get("TRKIND");
@@ -148,6 +154,11 @@ public class DataAccountServiceImpl implements ServiceDataAccount {
         //按月份统计的时候不记录负债账户的入金。只记录出金，资产户的出金入金都进行统计
         String sqlMonthItem = "select A.accname,T.wid,trdate,T.remark,T.trnum,T.trtype from T_WATER T LEFT JOIN T_ACCOUNT A ON T.AID=A.AID WHERE ((A.PROP='2' AND T.TRTYPE='0') or A.PROP='1') AND T.TRADEKIND<>00 and  DATE_FORMAT(TRDATE,'%Y-%m') =? order by T.UPDATETIME desc";
         return jdbcTemplate.queryForList(sqlMonthItem,datestr);
+    }
+
+    @Override
+    public List<Map<String, Object>> queryYearReport(String datestr) {
+        return jdbcTemplate.queryForList("SELECT sum(TRNUM) CASH,  case  TRADEKIND when 10 then '居家'when 20 then '食品' when 30 then '交通' when 40 then '投资' when 50 then '还款' when 61 then '工资' when 71 then '投资收益' when 81 then '其他收益'when 90 then '投资亏损' end TRADEKIND FROM T_WATER where DEL=0 and TRADEKIND<>'00'  AND date_format(TRDATE,'%Y') = ? group by TRADEKIND ",datestr);
     }
 
     /**
@@ -238,5 +249,12 @@ public class DataAccountServiceImpl implements ServiceDataAccount {
         String updatemoney = "UPDATE T_ACCOUNT SET BALANCE=? WHERE AID=?";
 
         jdbcTemplate.update(updatemoney, balnaceresult, account);
+    }
+
+    /**
+     * 刷新result变量
+     */
+    private void refreshResult(){
+        result = null;
     }
 }

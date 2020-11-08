@@ -90,4 +90,10 @@ public class ControllerAccount {
         return JSONObject.toJSONString(monthList);
     }
 
+    @RequestMapping("/queryyearreport")
+    public String queryyearreport(@RequestParam String datestr){
+        List<Map<String, Object>> yearReport = serviceDataAccount.queryYearReport(datestr);
+        return JSONObject.toJSONString(yearReport);
+    }
+
 }

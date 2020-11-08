@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<!--suppress ALL -->
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>报告</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <title>报告</title>
+
+    <!--标准mui.css-->
+    <link rel="stylesheet" type="text/css" href="./css/mui.css">
+    <link rel="stylesheet" type="text/css" href="./css/mui.picker.min.css">
+    <link rel="stylesheet" type="text/css" href="./css/mui.poppicker.css">
+</head>
+<body>
+<header class="mui-bar mui-bar-nav">
+    <button class="mui-action-back mui-btn mui-btn-blue mui-btn-link mui-btn-nav mui-pull-left"><span class="mui-icon mui-icon-left-nav"></span>返回</button>
+    <h1 class="mui-title">报表</h1>
+</header>
+<div class="mui-content">
+    <div id="container" style="top:40px;width: 400px;height:400px;"></div>
+</div>
+<script src="./js/mui.js"></script>
+<script src="./js/mui.picker.min.js"></script>
+<script src="./js/mui.poppicker.js"></script>
+<script src="./js/common.js"></script>
+<script src="./js/jQuery.min.js"></script>
+<script src="./js/echarts.js"></script>
+<script>
+    $(function(){
+
+        var dom = document.getElementById("container");
+        var myChart = echarts.init(dom);
+        var app = {};
+        option = null;
+        var data = genData();
+
+        option = {
+            title: {
+                text: '财务统计',
+                subtext: '2020年度',
+                left: 'center'
+            },
+            tooltip: {
+                trigger: 'item',
+                formatter: '{a} <br/>{b} : {c} ({d}%)'
+            },
+            legend: {
+                type: 'scroll',
+                orient: 'vertical',
+                right: 0,
+                top: 0,
+                bottom: 0,
+                data: data.legendData,
+                show: false,
+                selected: data.selected
+            },
+            series: [
+                {
+                    name: '类型',
+                    type: 'pie',
+                    radius: '55%',
+                    center: ['50%', '50%'],
+                    data: data.seriesData,
+                    emphasis: {
+                        itemStyle: {
+                            shadowBlur: 10,
+                            shadowOffsetX: 0,
+                            shadowColor: 'rgba(0, 0, 0, 0.5)'
+                        }
+                    }
+                }
+            ]
+        };
+        function genData() {
+            console.log(1)
+         var legendData = [];
+            var seriesData = [];
+            var selected = {};
+            $.ajax({
+               url:'rest/queryyearreport',
+               data:{"datestr": '2020'},
+               dataType:'json',
+               success:function (result) {
+                   for(var i=0;i<result.length;i++){
+
+                       var kind = result[i].TRADEKIND;
+                       var cash = result[i].CASH;
+                       legendData.push(kind);
+                       seriesData.push({
+                           name: kind,
+                           value: cash
+                       });
+                       selected[kind] = result.length;
+                   }
+                   myChart.setOption(option, true);
+               }
+           })
+
+
+           /*count=10
+            for (var i = 0; i < count; i++) {
+                var name = '张三'+i;
+                legendData.push(name);
+                seriesData.push({
+                    name: name,
+                    value: Math.round(Math.random() * 100000)
+                });
+                selected[name] = count
+            }*/
+
+
+            return {
+                legendData: legendData,
+                seriesData: seriesData,
+                selected: selected
+            };
+
+        };
+
+
+    })
+
+</script>
+</body>
+</html>
