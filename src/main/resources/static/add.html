@@ -51,6 +51,7 @@
     </form>
 </div>
 </div>
+<script src="cordova.js"></script>
 <script src="./js/mui.js"></script>
 <script src="./js/mui.picker.min.js"></script>
 <script src="./js/mui.poppicker.js"></script>
@@ -58,6 +59,11 @@
 <script src="./js/jQuery.min.js"></script>
 
 <script>
+    document.addEventListener("deviceready",function(){
+         $("button").bind('click',function(){
+            navigator.vibrate(100);
+         });
+    });
     var bankdata = [];
     var kinddata = [];
    /* mui(document.body).on('tap', '.mui-btn', function(e) {
