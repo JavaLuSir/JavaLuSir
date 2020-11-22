@@ -68,7 +68,7 @@
         <span class="mui-tab-label">设置</span>
     </a>
 </nav>
-
+<script src="cordova.js"></script>
 <script src="./js/mui.min.js"></script>
 <script src="./js/common.js"></script>
 <script src="./js/jQuery.min.js"></script>
@@ -81,6 +81,9 @@
         var btnArray = ['确认', '取消'];
         //第二个demo，向左拖拽后显示操作图标，释放后自动触发的业务逻辑
         $('.mui-table-view-cell').on('tap', '.mui-table-view-cell', function (event) {
+            document.addEventListener("deviceready",function(){
+               navigator.vibrate(100);
+            });
             var elem = this;
             mui.confirm('确认删除该条记录？', '删除', btnArray, function (e) {
 

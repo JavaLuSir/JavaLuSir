@@ -114,7 +114,7 @@
     });
 
     var addDetail = function(e){
-        $("button").unbind('click');
+
         $(e).attr("disable",true);
         var formobj = $("input[name]");
         var accountparam = {};
@@ -135,6 +135,7 @@
         if(!checkform(accountparam)){
             return;
         }
+        $("button").unbind('click');
         $.ajax({
             url:host+'/rest/adddetail',
             type:'POST',
