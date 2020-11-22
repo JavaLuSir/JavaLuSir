@@ -24,15 +24,12 @@ import java.util.Map;
 public class DataAccountServiceImpl implements ServiceDataAccount {
     @Autowired
     private JdbcTemplate jdbcTemplate;
-    //这里缓存一下数据提升性能能
-    private List<BeanWater> result = null;
+
     @Override
     public List<BeanWaterVO> queryAllAccounts() {
-        if(result == null){
-            ResultSetExtractor rset = new RowMapperResultSetExtractor(new BeanWater());
-            String sql = "SELECT T.AID,T.PROP,T.OWNER,T.ACCNAME,T.ACCOUNT,T.BALANCE,T.MTYPE,W.REMARK,T.OPERATER,W.AID,W.TRDATE,W.WID,W.TRADEKIND,W.TRTYPE,W.TRNUM,W.CREATETIME CREATETIME,W.UPDATETIME UPDATETIME FROM T_ACCOUNT T LEFT JOIN T_WATER W on T.AID=W.AID AND W.DEL='0' WHERE T.IFUSE='0' order by ORDERNUM asc,UPDATETIME desc";
-            result = (List<BeanWater>) jdbcTemplate.query(sql, rset);
-        }
+        ResultSetExtractor rset = new RowMapperResultSetExtractor(new BeanWater());
+        String sql = "SELECT T.AID,T.PROP,T.OWNER,T.ACCNAME,T.ACCOUNT,T.BALANCE,T.MTYPE,W.REMARK,T.OPERATER,W.AID,W.TRDATE,W.WID,W.TRADEKIND,W.TRTYPE,W.TRNUM,W.CREATETIME CREATETIME,W.UPDATETIME UPDATETIME FROM T_ACCOUNT T LEFT JOIN T_WATER W on T.AID=W.AID AND W.DEL='0' WHERE T.IFUSE='0' order by ORDERNUM asc,UPDATETIME desc";
+        List<BeanWater> result  = (List<BeanWater>) jdbcTemplate.query(sql, rset);
         return BeanWater.toVO(result);
     }
 
@@ -101,7 +98,7 @@ public class DataAccountServiceImpl implements ServiceDataAccount {
 
     @Override
     public Map<String, String> addDetail(Map<String, String> param) {
-        refreshResult();
+
         String aid = param.get("AID");
         String trdate = param.get("TRDATE");
         String tradekind = param.get("TRKIND");
@@ -251,10 +248,5 @@ public class DataAccountServiceImpl implements ServiceDataAccount {
         jdbcTemplate.update(updatemoney, balnaceresult, account);
     }
 
-    /**
-     * 刷新result变量
-     */
-    private void refreshResult(){
-        result = null;
-    }
+
 }

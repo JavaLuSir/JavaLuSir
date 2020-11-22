@@ -1,3 +1,4 @@
+var host="https://luxinx.com/account";
 //设置下拉选择功能
 //objId为input框id data为数组类型的下拉选择数据，func为回调函数
 var dataselect = function(objId,data,func){

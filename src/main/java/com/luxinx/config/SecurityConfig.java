@@ -2,6 +2,7 @@ package com.luxinx.config;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -33,14 +34,15 @@ import javax.sql.DataSource;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-@Configuration
-@EnableWebSecurity
+//@Configuration
+//@EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Value("${account.username}")
     private String username;
     @Value("${account.password}")
     private String password;
+    @Qualifier("dataSource")
     @Autowired
     private DataSource dataSource; // 数据源
     /**

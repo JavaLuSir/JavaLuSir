@@ -40,20 +40,9 @@
 <script src="./js/common.js"></script>
 <script src="./js/jQuery.min.js"></script>
 <script>
-    /*accname: "网商银行"
-    account: "62211122222"
-    aid: 2
-    balance: 0
-    createtime: 1584921600000
-    mtype: "CNY"
-    operater: "李四"
-    owner: "张三"
-    prop: "1"
-    remark: "1"
-    updatetime: 1584921600000*/
     $(function(){
         $.ajax({
-            url:'./rest/account',
+            url:host+'/rest/account',
             type:'POST',
             beforeSend:function(){
 
@@ -93,7 +82,7 @@ var del = function(id){
     mui.confirm('是否要删除，确认？', '账户删除', btnArray, function(e) {
         if (e.index == 0) {
             $.ajax({
-                url:'./rest/delaccount',
+                url:host+'/rest/delaccount',
                 method:'POST',
                 data:{"id":id},
                 success:function(){

@@ -78,7 +78,7 @@
     $(function(){
         $("button").bind('click',addDetail);
         $.ajax({
-            url:'./rest/account',
+            url:host+'/rest/account',
             type:'POST',
             dataType:'json',
             success:function(result){
@@ -86,7 +86,7 @@
                      bankdata.push({value:result[i].aid,text:result[i].accname})
                 }
                 $.ajax({
-                    url:'./rest/querykind',
+                    url:host+'/rest/querykind',
                     type:'POST',
                     dataType:'json',
                     success:function(result){
@@ -130,7 +130,7 @@
             return;
         }
         $.ajax({
-            url:'./rest/adddetail',
+            url:host+'/rest/adddetail',
             type:'POST',
             dataType:'json',
             data:JSON.stringify(accountparam),

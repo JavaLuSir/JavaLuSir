@@ -80,7 +80,7 @@
             var seriesData = [];
             var selected = {};
             $.ajax({
-               url:'rest/queryyearreport',
+               url:host+'/rest/queryyearreport',
                data:{"datestr": '2020'},
                dataType:'json',
                success:function (result) {

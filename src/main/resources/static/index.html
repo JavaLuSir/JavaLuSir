@@ -86,7 +86,7 @@
 
                 if (e.index === 0) {
                     $.ajax({
-                        url: './rest/deldetail',
+                        url: host+'/rest/deldetail',
                         type: 'POST',
                         data: {"id": elem.value},
                         dataType: 'json',
@@ -133,7 +133,7 @@
                 return;
             }
             $.ajax({
-                url: './rest/querymonthitem',
+                url: host+'/rest/querymonthitem',
                 type: 'POST',
                 data: {"datestr": datestr},
                 dataType: 'json',
@@ -174,7 +174,7 @@
         var totalmoney = 0;
 
         $.ajax({
-            url: './rest/querymonth',
+            url: host+'/rest/querymonth',
             type: 'POST',
             dataType: 'json',
             beforeSend: function () {
