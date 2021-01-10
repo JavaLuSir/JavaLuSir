@@ -9,7 +9,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 @SpringBootApplication
 @EnableAutoConfiguration(exclude = {SecurityAutoConfiguration.class})
-@ComponentScan(basePackages = {"com.luxinx.**.service","com.luxinx.**.controller","com.luxinx.config"})
+@ComponentScan(basePackages = {"com.luxinx.**.service","com.luxinx.**.controller","com.luxinx.config","com.luxinx.cron"})
 public class AccountApplication {
 
     public static void main(String[] args) {
