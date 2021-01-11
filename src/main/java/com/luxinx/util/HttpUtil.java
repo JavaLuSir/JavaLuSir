@@ -4,13 +4,15 @@ import com.alibaba.fastjson.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 
@@ -25,7 +27,7 @@ public class HttpUtil {
      * @throws Exception
      */
     public static String post(String urlStr,Map<String,String> property,String content) throws Exception{
-        urlStr="https://fundf10.eastmoney.com/F10DataApi.aspx?type=lsjz&code=260108&page=1&per=20&sdate=2021-01-08&edate=2021-01-08";
+
         //创建一个URL连接对象
         URL url=new URL(urlStr);
         //打开连接 URL会根据url具体类型返回不同的连接对象
@@ -81,18 +83,4 @@ public class HttpUtil {
         return line;
     }
 
-    public static void main(String[] args) {
-        try {
-            String r = HttpUtil.post(null, null, "");
-            Map<String,String> tb = (Map) JSONObject.parse(r.substring(12,r.length()-1).replaceAll("'","\\\\'"));
-            //System.out.println(r);
-            String html = tb.get("content");
-            Document doc = Jsoup.parseBodyFragment(html);
-            Element body = doc.body();
-            String s = body.getElementsByClass("grn").prev().prev().text();
-           System.out.println(s);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 }

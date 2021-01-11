@@ -7,7 +7,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    <title>报告</title>
 
     <!--标准mui.css-->
     <link rel="stylesheet" type="text/css" href="./css/mui.css">
@@ -19,8 +18,15 @@
     <button class="mui-action-back mui-btn mui-btn-blue mui-btn-link mui-btn-nav mui-pull-left"><span class="mui-icon mui-icon-left-nav"></span>返回</button>
     <h1 class="mui-title">报表</h1>
 </header>
+
 <div class="mui-content">
-    <div id="container" style="top:40px;width: 400px;height:400px;"></div>
+    <div class="mui-input-row">
+        <label>年度</label>
+        <input  id="yearselect" readonly type="text" name="yearselect" data-options="" class="mui-input-clear" placeholder="请选择" data-input-clear="3"><span class="mui-icon mui-icon-clear mui-hidden"></span>
+    </div>
+    <div id="container" style="top:40px;width: 400px;height:400px;">
+
+    </div>
 </div>
 <script src="./js/mui.js"></script>
 <script src="./js/mui.picker.min.js"></script>
@@ -28,60 +34,32 @@
 <script src="./js/common.js"></script>
 <script src="./js/jQuery.min.js"></script>
 <script src="./js/echarts.js"></script>
+
 <script>
+    var yeardate = '2021';
     $(function(){
 
         var dom = document.getElementById("container");
         var myChart = echarts.init(dom);
-        var app = {};
-        option = null;
+        var option = null;
         var data = genData();
 
-        option = {
-            title: {
-                text: '财务统计',
-                subtext: '2020年度',
-                left: 'center'
-            },
-            tooltip: {
-                trigger: 'item',
-                formatter: '{a} <br/>{b} : {c} ({d}%)'
-            },
-            legend: {
-                type: 'scroll',
-                orient: 'vertical',
-                right: 0,
-                top: 0,
-                bottom: 0,
-                data: data.legendData,
-                show: false,
-                selected: data.selected
-            },
-            series: [
-                {
-                    name: '类型',
-                    type: 'pie',
-                    radius: '55%',
-                    center: ['50%', '50%'],
-                    data: data.seriesData,
-                    emphasis: {
-                        itemStyle: {
-                            shadowBlur: 10,
-                            shadowOffsetX: 0,
-                            shadowColor: 'rgba(0, 0, 0, 0.5)'
-                        }
-                    }
-                }
-            ]
-        };
+        dataselect('yearselect',[{value:2021,text:2021},{value:2020,text:2020}],function(){
+            yeardate = document.getElementById('yearselect').getAttribute("data-options");
+            //myChart.dispose();
+           // myChart = echarts.init(dom);
+            data = genData();
+
+        });
+
+       // option =
         function genData() {
-            console.log(1)
-         var legendData = [];
+            var legendData = [];
             var seriesData = [];
             var selected = {};
             $.ajax({
                url:host+'/rest/queryyearreport',
-               data:{"datestr": '2020'},
+               data:{"datestr": yeardate},
                dataType:'json',
                success:function (result) {
                    for(var i=0;i<result.length;i++){
@@ -95,22 +73,46 @@
                        });
                        selected[kind] = result.length;
                    }
-                   myChart.setOption(option, true);
+                   myChart.setOption({
+                       title: {
+                           text: '财务统计',
+                           subtext: yeardate+'年度',
+                           left: 'center'
+                       },
+                       tooltip: {
+                           trigger: 'item',
+                           formatter: '{a} <br/>{b} : {c} ({d}%)'
+                       },
+                       legend: {
+                           type: 'scroll',
+                           orient: 'vertical',
+                           right: 0,
+                           top: 0,
+                           bottom: 0,
+                           data: data.legendData,
+                           show: false,
+                           selected: data.selected
+                       },
+                       series: [
+                           {
+                               name: '类型',
+                               type: 'pie',
+                               radius: '55%',
+                               center: ['50%', '50%'],
+                               data: data.seriesData,
+                               emphasis: {
+                                   itemStyle: {
+                                       shadowBlur: 10,
+                                       shadowOffsetX: 0,
+                                       shadowColor: 'rgba(0, 0, 0, 0.5)'
+                                   }
+                               }
+                           }
+                       ]
+                   },true);
+
                }
            })
-
-
-           /*count=10
-            for (var i = 0; i < count; i++) {
-                var name = '张三'+i;
-                legendData.push(name);
-                seriesData.push({
-                    name: name,
-                    value: Math.round(Math.random() * 100000)
-                });
-                selected[name] = count
-            }*/
-
 
             return {
                 legendData: legendData,

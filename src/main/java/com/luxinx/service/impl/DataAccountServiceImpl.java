@@ -12,10 +12,7 @@ import org.springframework.util.StringUtils;
 import java.math.BigDecimal;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 流水查询实现类
@@ -156,6 +153,32 @@ public class DataAccountServiceImpl implements ServiceDataAccount {
     @Override
     public List<Map<String, Object>> queryYearReport(String datestr) {
         return jdbcTemplate.queryForList("SELECT sum(TRNUM) CASH,  case  TRADEKIND when 10 then '居家'when 20 then '食品' when 30 then '交通' when 40 then '投资' when 50 then '还款' when 61 then '工资' when 71 then '投资收益' when 81 then '其他收益'when 90 then '投资亏损' end TRADEKIND FROM T_WATER where DEL=0 and TRADEKIND<>'00'  AND date_format(TRDATE,'%Y') = ? group by TRADEKIND ",datestr);
+    }
+
+    @Override
+    public List<Map<String, Object>> queryTouziInfo(String ttype ) {
+        String query="SELECT * FROM T_TOUZI T WHERE TTYPE = ?";
+        return jdbcTemplate.queryForList(query,ttype);
+    }
+
+    @Override
+    public void updateTouziInfo(String tcode,Map<String, String> touziMap) {
+        Set<String> kset = touziMap.keySet();
+        StringBuilder updateStr = new StringBuilder("UPDATE T_TOUZI SET ");
+        StringBuilder sbd = new StringBuilder();
+        for (String mpkey:kset) {
+            sbd.append(mpkey).append("='").append(touziMap.get(mpkey)).append("',");
+        }
+        String str = sbd.substring(0, sbd.length() - 1);
+        str+= " WHERE TCODE='"+tcode+"'";
+        updateStr.append(str);
+        jdbcTemplate.update(updateStr.toString());
+    }
+
+    @Override
+    public List<Map<String, Object>> queryTodayTouziMoney() {
+        String sql = "SELECT AID,sum(TEARN) TRNUM from T_TOUZI group by AID";
+        return jdbcTemplate.queryForList(sql);
     }
 
     /**

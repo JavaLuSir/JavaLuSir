@@ -70,4 +70,22 @@ public interface ServiceDataAccount {
      */
     List<Map<String,Object>> queryYearReport(String datestr);
 
+    /**
+     * 查询投资账户ttype=1股票ttype=2基金
+     * @return
+     */
+    List<Map<String,Object>> queryTouziInfo(String ttype);
+
+    /**
+     * 更新投资表字段
+     * @return
+     */
+    void updateTouziInfo(String tcode ,Map<String,String> touziMap);
+
+    /**
+     * 查询今天投资账户变化多少
+     * @return
+     */
+    List<Map<String,Object>> queryTodayTouziMoney();
+
 }
