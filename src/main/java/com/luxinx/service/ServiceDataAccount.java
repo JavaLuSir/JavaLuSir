@@ -81,11 +81,15 @@ public interface ServiceDataAccount {
      * @return
      */
     void updateTouziInfo(String tcode ,Map<String,String> touziMap);
-
+    /**
+     * 更新投资表字段
+     * @return
+     */
+    void updateTouziTime(String datestr);
     /**
      * 查询今天投资账户变化多少
      * @return
      */
-    List<Map<String,Object>> queryTodayTouziMoney();
+    List<Map<String,Object>> queryTodayTouziMoney(String datestr);
 
 }

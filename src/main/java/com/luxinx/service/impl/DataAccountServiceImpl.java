@@ -172,12 +172,18 @@ public class DataAccountServiceImpl implements ServiceDataAccount {
         String str = sbd.substring(0, sbd.length() - 1);
         str+= " WHERE TCODE='"+tcode+"'";
         updateStr.append(str);
+        System.out.println(updateStr.toString());
         jdbcTemplate.update(updateStr.toString());
     }
 
     @Override
-    public List<Map<String, Object>> queryTodayTouziMoney() {
-        String sql = "SELECT AID,sum(TEARN) TRNUM from T_TOUZI group by AID";
+    public void updateTouziTime(String datestr) {
+        jdbcTemplate.update("UPDATE T_TOUZI SET DATESTR='"+datestr+"'");
+    }
+
+    @Override
+    public List<Map<String, Object>> queryTodayTouziMoney(String datestr) {
+        String sql = "SELECT AID,sum(TEARN) TRNUM from T_TOUZI WHERE DATESTR = '"+datestr+"' group by AID";
         return jdbcTemplate.queryForList(sql);
     }
 

@@ -26,7 +26,7 @@ public class Tzcrond {
     @Scheduled(cron = "0 15 21 ? * MON-FRI")
     //或直接指定时间间隔，例如：5秒
     //@Scheduled(fixedRate = 10000)
-    private void configureTasks() {
+    public void configureTasks() {
         //更新投资账户金额
         updateTouziInfo();
         //更新账户变动资金流水
@@ -35,7 +35,7 @@ public class Tzcrond {
     }
 
     private void updateAccountInfo() {
-        List<Map<String, Object>> moneylist = serviceDataAccount.queryTodayTouziMoney();
+        List<Map<String, Object>> moneylist = serviceDataAccount.queryTodayTouziMoney(getLastDate());
 
         for(Map<String, Object> m:moneylist){
             String aid = m.get("AID")+"";
@@ -54,6 +54,8 @@ public class Tzcrond {
             param.put("TRNUM",String.valueOf(Math.abs(trnum)));
             serviceDataAccount.addDetail(param);
         }
+        serviceDataAccount.updateTouziTime(getTodayDate());
+
 
     }
 
@@ -75,6 +77,9 @@ public class Tzcrond {
                 String todayUrlStr = paddingURL(tcode, todayDateStr);
                 //获取今天交易日基金净值
                 String tprice = getPrice(todayUrlStr);
+                System.out.println(tcode+"--tprice:"+tprice);
+                System.out.println(tcode+"--lprice:"+lprice);
+
                 //构造更新数据参数
                 Map<String, String> paramMap = new HashMap<>();
                 if (!tprice.isEmpty()) {
@@ -127,6 +132,8 @@ public class Tzcrond {
         String wk = weeks[cd.get(Calendar.DAY_OF_WEEK) - 1];
         if (wk.equals("星期一")) {
             cd.add(Calendar.DATE, -3);
+        }else{
+            cd.add(Calendar.DATE, -1);
         }
         return sdf.format(cd.getTime());
     }
@@ -138,6 +145,12 @@ public class Tzcrond {
     }
 
     private String getPrice(String urlStr) {
+        try {
+            Thread.sleep(200);//防止过快请求
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        System.out.println(urlStr);
         String r = null;
         try {
             r = HttpUtil.post(urlStr, null, "");
@@ -148,12 +161,15 @@ public class Tzcrond {
         String html = (String) tb.get("content");
         Document doc = Jsoup.parseBodyFragment(html);
         Element body = doc.body();
-        return body.getElementsByClass("grn").prev().prev().text();
+        if(body.getElementsByClass("tor bold").first()==null){
+            return "";
+        }else {
+            return body.getElementsByClass("tor bold").first().text();
+        }
     }
 
     private String paddingURL(String tcode, String datestr) {
         return "https://fundf10.eastmoney.com/F10DataApi.aspx?type=lsjz&code=" + tcode + "&page=1&per=2&sdate=" + datestr + "&edate=" + datestr;
     }
-
 
 }
