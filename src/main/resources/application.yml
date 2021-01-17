@@ -3,7 +3,36 @@ server:
     context-path: /account
 spring:
   datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    platform: mysql
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://xxxx:3306/account?useSSL=false&serverTimezone=UTC&useUnicode=true&characterEncoding=UTF-8
-    username: root
-    password: xxxx
+    url: jdbc:mysql://xxxxxx/xxxxx?useSSL=false&serverTimezone=UTC&useUnicode=true&characterEncoding=UTF-8
+    username: xxxxxxxx
+    password: xxxxxxx
+    druid:
+      max-active: 10
+      initial-size: 5
+      min-idle: 5
+      max-wait: 10000
+      time-between-eviction-runs-millis: 60000
+      min-evictable-idle-time-millis: 100000
+      validation-query: SELECT 'X'
+      test-while-idle: true
+      test-on-borrow: true
+      test-on-return: true
+      pool-prepared-statements: true
+      max-pool-prepared-statement-per-connection-size: 10
+      filter:
+        slf4j:
+          connection-log-enabled: true
+          statement-create-after-log-enabled: false
+          statement-close-after-log-enabled: false
+          result-set-open-after-log-enabled: false
+          result-set-close-after-log-enabled: false
+          result-set-log-enabled: false
+        stat:
+          log-slow-sql: true
+          enabled: true
+          connection-stack-trace-enable: true
+        log4j2:
+          statement-sql-pretty-format: true

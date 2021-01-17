@@ -6,6 +6,7 @@ import com.luxinx.bean.BeanWaterVO;
 import com.luxinx.service.ServiceDataAccount;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.*;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -25,15 +26,18 @@ public class DataAccountServiceImpl implements ServiceDataAccount {
     @Override
     public List<BeanWaterVO> queryAllAccounts() {
         ResultSetExtractor rset = new RowMapperResultSetExtractor(new BeanWater());
-        String sql = "SELECT T.AID,T.PROP,T.OWNER,T.ACCNAME,T.ACCOUNT,T.BALANCE,T.MTYPE,W.REMARK,T.OPERATER,W.AID,W.TRDATE,W.WID,W.TRADEKIND,W.TRTYPE,W.TRNUM,W.CREATETIME CREATETIME,W.UPDATETIME UPDATETIME FROM T_ACCOUNT T LEFT JOIN T_WATER W on T.AID=W.AID AND W.DEL='0' WHERE T.IFUSE='0' order by ORDERNUM asc,UPDATETIME desc";
-        List<BeanWater> result  = (List<BeanWater>) jdbcTemplate.query(sql, rset);
+    //    String sql = "SELECT T.AID,T.PROP,T.OWNER,T.ACCNAME,T.ACCOUNT,T.BALANCE,T.MTYPE,W.REMARK,T.OPERATER,W.AID,W.TRDATE,W.WID,W.TRADEKIND,W.TRTYPE,W.TRNUM,W.CREATETIME CREATETIME,W.UPDATETIME UPDATETIME FROM T_ACCOUNT T LEFT JOIN T_WATER W on T.AID=W.AID AND W.DEL='0' WHERE T.IFUSE='0' order by ORDERNUM asc,UPDATETIME desc";
+        String sql ="SELECT T.AID,W.WID,T.ACCNAME,T.ACCOUNT,T.PROP,T.BALANCE,W.REMARK,W.TRDATE,W.TRTYPE,W.TRNUM,W.UPDATETIME FROM T_ACCOUNT T LEFT JOIN T_WATER W on T.AID=W.AID AND W.DEL='0' WHERE T.IFUSE='0' order by ORDERNUM asc,W.UPDATETIME desc";
+        NamedParameterJdbcTemplate npjt = new NamedParameterJdbcTemplate(this.jdbcTemplate.getDataSource());
+        List<BeanWater> result  = (List<BeanWater>) npjt.query(sql,rset);
         return BeanWater.toVO(result);
     }
 
     @Override
     public List<BeanAccount> queryAccount() {
         String queryaccount = "SELECT T.* FROM T_ACCOUNT T WHERE T.IFUSE='0'";
-        List<BeanAccount> beanaccounts = jdbcTemplate.query(queryaccount, new BeanAccount());
+        NamedParameterJdbcTemplate npjt = new NamedParameterJdbcTemplate(this.jdbcTemplate.getDataSource());
+        List<BeanAccount> beanaccounts = npjt.query(queryaccount, new BeanAccount());
         return beanaccounts;
     }
 
@@ -178,6 +182,7 @@ public class DataAccountServiceImpl implements ServiceDataAccount {
 
     @Override
     public void updateTouziTime(String datestr) {
+
         jdbcTemplate.update("UPDATE T_TOUZI SET DATESTR='"+datestr+"'");
     }
 

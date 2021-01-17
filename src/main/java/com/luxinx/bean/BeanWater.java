@@ -133,30 +133,27 @@ public class BeanWater implements RowMapper {
     @Override
     public Object mapRow(ResultSet resultSet, int i) throws SQLException {
 
-        //格式化金额
-        DecimalFormat decimalFormat = new DecimalFormat("###,###.00");
-
         BeanAccount acount = new BeanAccount();
         acount.setAid(resultSet.getInt("AID"));
         acount.setProp(resultSet.getString("PROP"));
-        acount.setOwner(resultSet.getString("OWNER"));
+       // acount.setOwner(resultSet.getString("OWNER"));
         acount.setAccname(resultSet.getString("ACCNAME"));
         acount.setAccount(resultSet.getString("ACCOUNT"));
         acount.setBalance(resultSet.getBigDecimal("BALANCE"));
-        acount.setMtype(resultSet.getString("MTYPE"));
-        acount.setRemark(resultSet.getString("REMARK"));
-        acount.setCreatetime(resultSet.getDate("CREATETIME"));
-        acount.setUpdatetime(resultSet.getDate("UPDATETIME"));
-        acount.setOperater(resultSet.getString("OPERATER"));
+      //  acount.setMtype(resultSet.getString("MTYPE"));
+     //   acount.setRemark(resultSet.getString("REMARK"));
+       // acount.setCreatetime(resultSet.getDate("CREATETIME"));
+      //  acount.setUpdatetime(resultSet.getDate("UPDATETIME"));
+       // acount.setOperater(resultSet.getString("OPERATER"));
 
         BeanWater beanWater = new BeanWater();
         beanWater.setAid(resultSet.getInt("AID"));
         beanWater.setWid(resultSet.getInt("WID"));
         beanWater.setTrdate( resultSet.getDate("TRDATE"));
-        beanWater.setTradekind( resultSet.getString("TRADEKIND"));
+      //  beanWater.setTradekind( resultSet.getString("TRADEKIND"));
         beanWater.setTrtype( resultSet.getString("TRTYPE"));
         beanWater.setRemark( resultSet.getString("REMARK"));
-        beanWater.setCreatetime( resultSet.getDate("CREATETIME"));
+      //  beanWater.setCreatetime( resultSet.getDate("CREATETIME"));
         beanWater.setUpdatetime( resultSet.getDate("UPDATETIME"));
         beanWater.setTrnum(resultSet.getBigDecimal("TRNUM"));
 
