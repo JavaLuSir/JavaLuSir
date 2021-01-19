@@ -15,11 +15,20 @@
 
 </head>
 <style>
-    * { touch-action: pan-y; }
-    .rd { color:red; }
-    .gr { color:green;}
+    * {
+        touch-action: pan-y;
+    }
+
+    .rd {
+        color: red;
+    }
+
+    .gr {
+        color: green;
+    }
+
     .mui-pull-bottom-pocket {
-        height:0px ;
+        height: 0px;
     }
 </style>
 <body>
@@ -27,9 +36,9 @@
     <h1 class="mui-title">账户信息 | 总资产<span id="total"></span></h1>
 </header>
 <div id="pullrefresh" class="mui-content mui-scroll-wrapper" style="padding-bottom: 100px;overflow: auto;">
-<div id="container" class="mui-content">
+    <div id="container" class="mui-content">
 
-</div>
+    </div>
 </div>
 <!------------------------------------------>
 <nav class="mui-bar mui-bar-tab">
@@ -43,7 +52,7 @@
         <span class="mui-tab-label">记账</span>
     </a>
 
-    <a class="mui-tab-item"  href="./setting.html">
+    <a class="mui-tab-item" href="./setting.html">
         <span class="mui-icon mui-icon-gear"></span>
         <span class="mui-tab-label">设置</span>
     </a>
@@ -53,90 +62,98 @@
 <script src="./js/common.js"></script>
 <script src="./js/jQuery.min.js"></script>
 <script>
-    var funds_cn='余额：';
+    var funds_cn = '余额：';
     var count = 0;
+
     function pullupRefresh() {
-        setTimeout(function() {
+        setTimeout(function () {
             mui('#pullrefresh').pullRefresh().endPullupToRefresh((++count > 2)); //参数为true代表没有更多数据了。
 
         }, 1500);
     }
+
     function pulldownRefresh() {
-        setTimeout(function() {
+        setTimeout(function () {
             mui('#pullrefresh').pullRefresh().endPulldownToRefresh();
             freshtotal();
             mui.toast("已更新~！");
         }, 1000);
     }
+
     //刷新总金额
-    function freshtotal(){
+    function freshtotal() {
         var totalmoney = 0;
 
         $.ajax({
-            url:host+'/rest/account',
-            type:'POST',
-            beforeSend:function(request){
-                request.setRequestHeader("token",token);
+            url: host + '/rest/account',
+            type: 'POST',
+            beforeSend: function (request) {
+                request.setRequestHeader("token", token);
             },
-            success:function(result){
-                var accounts=JSON.parse(result);
-                for(var i=0;i<accounts.length;i++){
+            success: function (result) {
+                var accounts = JSON.parse(result);
+                for (var i = 0; i < accounts.length; i++) {
                     var balance = accounts[i].balance; //余额
                     var prop = accounts[i].prop;       //账户类型
-                    if(prop==1){
-                        totalmoney+=balance*100;
-                    }else{
-                        totalmoney-=balance*100;
+                    if (prop == 1) {
+                        totalmoney += balance * 100;
+                    } else {
+                        totalmoney -= balance * 100;
                     }
                 }
 
                 //设置总金额
-                var finalmoney = totalmoney/100;
-                $("#total").text(number_format(finalmoney,2,".",","));//格式化成两位小数
-                if(finalmoney<0){
+                var finalmoney = totalmoney / 100;
+                $("#total").text(number_format(finalmoney, 2, ".", ","));//格式化成两位小数
+                if (finalmoney < 0) {
                     $("#total").addClass("rd");
-                }else{
+                } else {
                     $("#total").addClass("gr");
                 }
 
             },
-            error:function(){
+            error: function () {
                 mui.toast("网络错误");
             }
         })
     }
-    function bindquerymoneydetail(){
+
+    function bindquerymoneydetail() {
 
         $(".mui-navigate-right").on("tap", function (e) {
-            var ulnode = '';
-            var aidnode= e.target.attributes['aid'];
+            var ulhtml = '';
+            var aidnode = e.target.attributes['aid'];
             var propnode = e.target.attributes['prop']
-            var aid ='';
-            var prop ='';
-            if(!aidnode){
-                ulnode = e.target.parentNode.nextElementSibling;
+            var aid = '';
+            var prop = '';
+            if (!aidnode) {
+                ulhtml = e.target.parentNode.nextElementSibling;
                 aid = e.target.parentElement.attributes['aid'].nodeValue
-            }else{
-                ulnode = e.target.nextElementSibling;
+            } else {
+                ulhtml = e.target.nextElementSibling;
                 aid = aidnode.nodeValue;
             }
-            if(!propnode){
+            if (!propnode) {
                 prop = e.target.parentElement.attributes['prop'].nodeValue
-            }else{
+            } else {
                 prop = propnode.nodeValue;
             }
-
+            var ulnode = $(ulhtml);
+            debugger;
+            if (ulnode.children().length > 1) {
+                return;
+            }
             $.ajax({
-                url: host+'/rest/list',
+                url: host + '/rest/list',
                 type: 'POST',
                 data: {"id": aid},
                 dataType: 'json',
                 beforeSend: function (request) {
-                    request.setRequestHeader("token",token);
+                    request.setRequestHeader("token", token);
                 },
                 success: function (deitem) {
-                    var strdetail = '' ;
-                    for(var j =0;j<deitem.length;j++) {
+                    var strdetail = '';
+                    for (var j = 0; j < deitem.length; j++) {
                         if (deitem[j].trtype) {
 
                             var color = '';
@@ -161,124 +178,126 @@
                                 '</li>'
                         }
                     }
-                    $(ulnode).append(strdetail)
+                    ulnode.append(strdetail)
                 }
-             });
+            });
         });
     }
-    function binddelbtn(){
+
+    function binddelbtn() {
         var btnArray = ['确认', '取消'];
         //第二个demo，向左拖拽后显示操作图标，释放后自动触发的业务逻辑
-        $('.mui-table-view-cell').on('slideleft', '.mui-table-view-cell', function(event) {
+        $('.mui-table-view-cell').on('slideleft', '.mui-table-view-cell', function (event) {
             var elem = this;
-            mui.confirm('确认删除该条记录？', '删除', btnArray, function(e) {
+            mui.confirm('确认删除该条记录？', '删除', btnArray, function (e) {
 
                 if (e.index === 0) {
                     $.ajax({
-                        url:host+'/rest/deldetail',
-                        type:'POST',
-                        data:{"id":elem.value},
-                        dataType:'json',
-                        beforeSend:function(request){
-                            request.setRequestHeader("token",token);
+                        url: host + '/rest/deldetail',
+                        type: 'POST',
+                        data: {"id": elem.value},
+                        dataType: 'json',
+                        beforeSend: function (request) {
+                            request.setRequestHeader("token", token);
                         },
-                        success:function(result){
-                            if(result&&result.code==='0'){
-                                if(result.funds){
-                                    $(elem).parents('.mui-active').find(".mui-navigate-right .funds").text(funds_cn+number_format(result.funds,2,".",","))
+                        success: function (result) {
+                            if (result && result.code === '0') {
+                                if (result.funds) {
+                                    $(elem).parents('.mui-active').find(".mui-navigate-right .funds").text(funds_cn + number_format(result.funds, 2, ".", ","))
                                 }
 
                                 elem.parentNode.removeChild(elem);
                                 freshtotal();
                                 mui.toast("已删除!");
-                            }else{
+                            } else {
                                 mui.toast("删除失败！");
                             }
                         },
-                        error:function(){
+                        error: function () {
                             mui.toast("网络错误");
                         }
 
                     })
 
                 } else {
-                    setTimeout(function() {
+                    setTimeout(function () {
                         mui.swipeoutClose(elem);
                     }, 0);
                 }
             });
         });
     }
-var initData = function (){
+
+    var initData = function () {
         var totalmoney = 0;
 
         $.ajax({
-            url:host+'/rest/account',
-            type:'POST',
-            beforeSend:function(request){
-                request.setRequestHeader("token",token);
+            url: host + '/rest/account',
+            type: 'POST',
+            beforeSend: function (request) {
+                request.setRequestHeader("token", token);
             },
-            success:function(result){
-                var accounts=JSON.parse(result);
-                for(var i=0;i<accounts.length;i++){
+            success: function (result) {
+                var accounts = JSON.parse(result);
+                for (var i = 0; i < accounts.length; i++) {
                     var accname = accounts[i].accname; //账户中文名
                     var aid = accounts[i].aid; //账户id
                     var account = accounts[i].account; //账户账号
                     var balance = accounts[i].balance; //余额
                     var prop = accounts[i].prop;       //账户类型
-                    if(prop==1){
-                        totalmoney+=balance*100;
-                    }else{
-                        totalmoney-=balance*100;
+                    if (prop == 1) {
+                        totalmoney += balance * 100;
+                    } else {
+                        totalmoney -= balance * 100;
                     }
-                        //设置***
-                        if(account.length>7){
-                            var startacc=account.substr(0,3);
-                            var midacc="***";
-                            var endacc=account.substr(account.length-4);
-                            account="".concat(startacc).concat(midacc).concat(endacc);
-                        }
-
-                        //拼接基本信息
-                        var cardhtml =
-                            '<div class="mui-card" style="margin: 15px 0px;">'+
-                            '<ul class="mui-table-view mui-table-view-chevron">'+
-                            '<li class="mui-table-view-cell mui-collapse">'+
-                            '<a class="mui-navigate-right" aid="'+aid+'" prop="'+prop+'"  style="color:'+(prop==1?"green":"red")+'" href="#">'+(prop==1?"资":"债")+'|'+accname+' | '+account+'  <span class="funds" style="float: right"> '+funds_cn+number_format(balance,2,".",",")+'</span></a>'+
-                            '<ul class="mui-table-view mui-table-view-chevron">'+
-                            '</ul>'+
-                            '</div>';
-
-                        $("#container").append(cardhtml);
+                    //设置***
+                    if (account.length > 7) {
+                        var startacc = account.substr(0, 3);
+                        var midacc = "***";
+                        var endacc = account.substr(account.length - 4);
+                        account = "".concat(startacc).concat(midacc).concat(endacc);
                     }
+
+                    //拼接基本信息
+                    var cardhtml =
+                        '<div class="mui-card" style="margin: 15px 0px;">' +
+                        '<ul class="mui-table-view mui-table-view-chevron">' +
+                        '<li class="mui-table-view-cell mui-collapse">' +
+                        '<a class="mui-navigate-right" aid="' + aid + '" prop="' + prop + '"  style="color:' + (prop == 1 ? "green" : "red") + '" href="#">' + (prop == 1 ? "资" : "债") + '|' + accname + ' | ' + account + '  <span class="funds" style="float: right"> ' + funds_cn + number_format(balance, 2, ".", ",") + '</span></a>' +
+                        '<ul class="mui-table-view mui-table-view-chevron">' +
+                        '</ul>' +
+                        '</div>';
+
+                    $("#container").append(cardhtml);
+                }
                 binddelbtn();
                 bindquerymoneydetail();
 
                 //设置总金额
-                var finalmoney = totalmoney/100;
-                $("#total").text(number_format(finalmoney,2,".",","));//格式化成两位小数
-                if(finalmoney<0){
+                var finalmoney = totalmoney / 100;
+                $("#total").text(number_format(finalmoney, 2, ".", ","));//格式化成两位小数
+                if (finalmoney < 0) {
                     $("#total").addClass("rd");
-                }else{
+                } else {
                     $("#total").addClass("gr");
                 }
 
             },
-            error:function(){
+            error: function () {
                 mui.toast("网络错误");
             }
         })
     }
-    $(function(){
+    $(function () {
         mui.init({
             pullRefresh: {
                 container: '#pullrefresh',
                 down: {
-                    style:'circle',
+                    style: 'circle',
                     callback: pulldownRefresh
                 },
                 up: {
-                    auto:true,
+                    auto: true,
                     contentrefresh: '正在加载...',
                     callback: pullupRefresh
                 }
