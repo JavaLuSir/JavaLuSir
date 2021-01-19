@@ -133,19 +133,6 @@ public class BeanWater implements RowMapper {
     @Override
     public Object mapRow(ResultSet resultSet, int i) throws SQLException {
 
-        BeanAccount acount = new BeanAccount();
-        acount.setAid(resultSet.getInt("AID"));
-        acount.setProp(resultSet.getString("PROP"));
-       // acount.setOwner(resultSet.getString("OWNER"));
-        acount.setAccname(resultSet.getString("ACCNAME"));
-        acount.setAccount(resultSet.getString("ACCOUNT"));
-        acount.setBalance(resultSet.getBigDecimal("BALANCE"));
-      //  acount.setMtype(resultSet.getString("MTYPE"));
-     //   acount.setRemark(resultSet.getString("REMARK"));
-       // acount.setCreatetime(resultSet.getDate("CREATETIME"));
-      //  acount.setUpdatetime(resultSet.getDate("UPDATETIME"));
-       // acount.setOperater(resultSet.getString("OPERATER"));
-
         BeanWater beanWater = new BeanWater();
         beanWater.setAid(resultSet.getInt("AID"));
         beanWater.setWid(resultSet.getInt("WID"));
@@ -157,60 +144,6 @@ public class BeanWater implements RowMapper {
         beanWater.setUpdatetime( resultSet.getDate("UPDATETIME"));
         beanWater.setTrnum(resultSet.getBigDecimal("TRNUM"));
 
-        beanWater.setBeanAccount(acount);
         return beanWater;
-    }
-    public static List<BeanWaterVO> toVO(List<BeanWater> listWater){
-        List<BeanWaterVO> result = new ArrayList<>();
-        Map<Integer,BeanWaterVO> mp= new HashMap<>();
-        for(BeanWater bt : listWater){
-            if(mp.get(bt.getAid())!=null){
-                BeanWaterVO bvo = mp.get(bt.getAid());
-                BeanWater water = new BeanWater();
-                water.setWid(bt.getWid());
-                water.setAid(bt.getAid());
-                water.setTrnum(bt.getTrnum());
-                water.setTrdate(bt.getTrdate());
-                water.setTrtype(bt.getTrtype());
-                water.setTradekind(bt.getTradekind());
-                water.setCreatetime(bt.getCreatetime());
-                water.setUpdatetime(bt.getUpdatetime());
-                water.setWid(bt.getWid());
-                water.setWid(bt.getWid());
-                water.setRemark(bt.getRemark());
-                bvo.getBeanWaterList().add(water);
-
-            }else {
-                //-----------------------------设置流水的值
-                List<BeanWater> wlist = new ArrayList<>();
-                BeanWater water = new BeanWater();
-                water.setWid(bt.getWid());
-                water.setAid(bt.getAid());
-                water.setTrnum(bt.getTrnum());
-                water.setTrdate(bt.getTrdate());
-                water.setTrtype(bt.getTrtype());
-                water.setTradekind(bt.getTradekind());
-                water.setCreatetime(bt.getCreatetime());
-                water.setUpdatetime(bt.getUpdatetime());
-                water.setWid(bt.getWid());
-                water.setRemark(bt.getRemark());
-                wlist.add(water);
-                //------------------------------设置主账户值
-                BeanWaterVO b =new BeanWaterVO();
-                b.setAid(bt.getBeanAccount().getAid());
-                b.setAccname(bt.getBeanAccount().getAccname());
-                b.setAccount(bt.getBeanAccount().getAccount());
-                b.setBalance(bt.getBeanAccount().getBalance());
-                b.setOwner(bt.getBeanAccount().getOwner());
-                b.setMtype(bt.getBeanAccount().getMtype());
-                b.setProp(bt.getBeanAccount().getProp());
-                b.setOperater(bt.getBeanAccount().getOperater());
-                b.setRemark(bt.getBeanAccount().getRemark());
-                b.setBeanWaterList(wlist);
-                result.add(b);
-                mp.put(bt.getAid(),b);//放一个map里待用
-            }
-        }
-        return result;
     }
 }

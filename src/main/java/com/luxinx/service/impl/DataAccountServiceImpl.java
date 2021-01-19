@@ -2,17 +2,14 @@ package com.luxinx.service.impl;
 
 import com.luxinx.bean.BeanAccount;
 import com.luxinx.bean.BeanWater;
-import com.luxinx.bean.BeanWaterVO;
 import com.luxinx.service.ServiceDataAccount;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.*;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.*;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.util.*;
 
 /**
@@ -24,18 +21,18 @@ public class DataAccountServiceImpl implements ServiceDataAccount {
     private JdbcTemplate jdbcTemplate;
 
     @Override
-    public List<BeanWaterVO> queryAllAccounts() {
-        ResultSetExtractor rset = new RowMapperResultSetExtractor(new BeanWater());
-    //    String sql = "SELECT T.AID,T.PROP,T.OWNER,T.ACCNAME,T.ACCOUNT,T.BALANCE,T.MTYPE,W.REMARK,T.OPERATER,W.AID,W.TRDATE,W.WID,W.TRADEKIND,W.TRTYPE,W.TRNUM,W.CREATETIME CREATETIME,W.UPDATETIME UPDATETIME FROM T_ACCOUNT T LEFT JOIN T_WATER W on T.AID=W.AID AND W.DEL='0' WHERE T.IFUSE='0' order by ORDERNUM asc,UPDATETIME desc";
-        String sql ="SELECT T.AID,W.WID,T.ACCNAME,T.ACCOUNT,T.PROP,T.BALANCE,W.REMARK,W.TRDATE,W.TRTYPE,W.TRNUM,W.UPDATETIME FROM T_ACCOUNT T LEFT JOIN T_WATER W on T.AID=W.AID AND W.DEL='0' WHERE T.IFUSE='0' order by ORDERNUM asc,W.UPDATETIME desc";
+    public List<BeanWater> queryAccountInfoById(String id) {
+        String sql ="select WID,AID,TRDATE,TRADEKIND,TRTYPE,TRNUM,REMARK,UPDATETIME from T_WATER where AID=:id order by UPDATETIME desc";
         NamedParameterJdbcTemplate npjt = new NamedParameterJdbcTemplate(this.jdbcTemplate.getDataSource());
-        List<BeanWater> result  = (List<BeanWater>) npjt.query(sql,rset);
-        return BeanWater.toVO(result);
+        ResultSetExtractor rset = new RowMapperResultSetExtractor(new BeanWater());
+        MapSqlParameterSource param = new MapSqlParameterSource();
+        param.addValue("id",id);
+        return (List<BeanWater>) npjt.query(sql,param,rset);
     }
 
     @Override
     public List<BeanAccount> queryAccount() {
-        String queryaccount = "SELECT T.* FROM T_ACCOUNT T WHERE T.IFUSE='0'";
+        String queryaccount = "SELECT T.* FROM T_ACCOUNT T WHERE T.IFUSE='0' ORDER BY ORDERNUM";
         NamedParameterJdbcTemplate npjt = new NamedParameterJdbcTemplate(this.jdbcTemplate.getDataSource());
         List<BeanAccount> beanaccounts = npjt.query(queryaccount, new BeanAccount());
         return beanaccounts;

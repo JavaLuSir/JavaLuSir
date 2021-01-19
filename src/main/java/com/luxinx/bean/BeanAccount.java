@@ -8,9 +8,7 @@ import org.springframework.jdbc.core.RowMapperResultSetExtractor;
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * 账户实体类与流水类一对多关联T_ACCOUNT

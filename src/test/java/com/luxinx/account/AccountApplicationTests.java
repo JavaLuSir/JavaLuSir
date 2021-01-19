@@ -2,7 +2,6 @@ package com.luxinx.account;
 
 import com.luxinx.bean.BeanAccount;
 import com.luxinx.bean.BeanWater;
-import com.luxinx.bean.BeanWaterVO;
 import com.luxinx.service.ServiceDataAccount;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -62,7 +61,7 @@ class AccountApplicationTests {
     @Test
     @DisplayName("serviceDataAccount.queryAllAccounts")
     public void testServiceDataAccountQueryAllAccounts(){
-        List<BeanWaterVO> rst = serviceDataAccount.queryAllAccounts();
+        List<BeanAccount> rst = serviceDataAccount.queryAccount();
         Assert.noNullElements(rst,"element not null");
     }
 }

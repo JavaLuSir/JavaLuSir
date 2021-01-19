@@ -87,6 +87,9 @@
             url:host+'/rest/account',
             type:'POST',
             dataType:'json',
+            beforeSend:function(request){
+                request.setRequestHeader("token",token);
+            },
             success:function(result){
                 for(var i=0;i<result.length;i++){
                      bankdata.push({value:result[i].aid,text:result[i].accname})
@@ -95,6 +98,9 @@
                     url:host+'/rest/querykind',
                     type:'POST',
                     dataType:'json',
+                    beforeSend:function(request){
+                        request.setRequestHeader("token",token);
+                    },
                     success:function(result){
                         for(var i=0;i<result.length;i++){
                             kinddata.push({value:result[i].VALUE,text:result[i].TEXT})
@@ -142,7 +148,8 @@
             dataType:'json',
             data:JSON.stringify(accountparam),
             contentType:'application/json',
-            beforeSend:function(){
+            beforeSend:function(request){
+                request.setRequestHeader("token",token);
             },
             success:function(result){
                 if(result.code&&result.code==0){

@@ -73,15 +73,14 @@
         var totalmoney = 0;
 
         $.ajax({
-            url:host+'/rest/list',
+            url:host+'/rest/account',
             type:'POST',
-            beforeSend:function(){
+            beforeSend:function(request){
+                request.setRequestHeader("token",token);
             },
             success:function(result){
                 var accounts=JSON.parse(result);
                 for(var i=0;i<accounts.length;i++){
-                    var accname = accounts[i].accname; //账户中文名
-                    var account = accounts[i].account; //账户账号
                     var balance = accounts[i].balance; //余额
                     var prop = accounts[i].prop;       //账户类型
                     if(prop==1){
@@ -106,6 +105,67 @@
             }
         })
     }
+    function bindquerymoneydetail(){
+
+        $(".mui-navigate-right").on("tap", function (e) {
+            var ulnode = '';
+            var aidnode= e.target.attributes['aid'];
+            var propnode = e.target.attributes['prop']
+            var aid ='';
+            var prop ='';
+            if(!aidnode){
+                ulnode = e.target.parentNode.nextElementSibling;
+                aid = e.target.parentElement.attributes['aid'].nodeValue
+            }else{
+                ulnode = e.target.nextElementSibling;
+                aid = aidnode.nodeValue;
+            }
+            if(!propnode){
+                prop = e.target.parentElement.attributes['prop'].nodeValue
+            }else{
+                prop = propnode.nodeValue;
+            }
+
+            $.ajax({
+                url: host+'/rest/list',
+                type: 'POST',
+                data: {"id": aid},
+                dataType: 'json',
+                beforeSend: function (request) {
+                    request.setRequestHeader("token",token);
+                },
+                success: function (deitem) {
+                    var strdetail = '' ;
+                    for(var j =0;j<deitem.length;j++) {
+                        if (deitem[j].trtype) {
+
+                            var color = '';
+                            var zhengfu = '';
+                            if (prop == "1") {
+                                color = deitem[j].trtype == 0 ? "red" : "green";
+                                zhengfu = deitem[j].trtype == 0 ? "-" : "+";
+                            } else {
+                                color = deitem[j].trtype == 1 ? "red" : "green";
+                                zhengfu = deitem[j].trtype == 1 ? "-" : "+";
+                            }
+
+                            strdetail += '<li class="mui-table-view-cell" value="' + deitem[j].wid + '">' +
+                                '<div class="mui-slider-right mui-disabled">' +
+                                '<a class="mui-btn mui-btn-red">删除</a>' +
+                                '</div>' +
+                                '<div class="mui-slider-handle mui-table">' +
+                                '<div style="float:left;width:30%;"><label>' + new Date(deitem[j].updatetime).Format('yyyy-MM-dd') + '</label>:</div>' +
+                                '<div style="float:left;"><label><span>' + (deitem[j].remark == undefined ? "" : deitem[j].remark) + '</span></label></div>' +
+                                '<div style="float:right;"><span class="mui-text-right" style="color:' + color + ';">' + zhengfu + '  ' + number_format(deitem[j].trnum, 2, ".", ",") + '</span></div>' +
+                                '</div>' +
+                                '</li>'
+                        }
+                    }
+                    $(ulnode).append(strdetail)
+                }
+             });
+        });
+    }
     function binddelbtn(){
         var btnArray = ['确认', '取消'];
         //第二个demo，向左拖拽后显示操作图标，释放后自动触发的业务逻辑
@@ -119,6 +179,9 @@
                         type:'POST',
                         data:{"id":elem.value},
                         dataType:'json',
+                        beforeSend:function(request){
+                            request.setRequestHeader("token",token);
+                        },
                         success:function(result){
                             if(result&&result.code==='0'){
                                 if(result.funds){
@@ -150,14 +213,16 @@ var initData = function (){
         var totalmoney = 0;
 
         $.ajax({
-            url:host+'/rest/list',
+            url:host+'/rest/account',
             type:'POST',
-            beforeSend:function(){
+            beforeSend:function(request){
+                request.setRequestHeader("token",token);
             },
             success:function(result){
                 var accounts=JSON.parse(result);
                 for(var i=0;i<accounts.length;i++){
                     var accname = accounts[i].accname; //账户中文名
+                    var aid = accounts[i].aid; //账户id
                     var account = accounts[i].account; //账户账号
                     var balance = accounts[i].balance; //余额
                     var prop = accounts[i].prop;       //账户类型
@@ -174,47 +239,20 @@ var initData = function (){
                             account="".concat(startacc).concat(midacc).concat(endacc);
                         }
 
-                        var strdetail ='';
-                        var deitem = accounts[i].beanWaterList;
-                        //拼接详情信息
-                        for(var j =0;j<deitem.length;j++){
-                            if(deitem[j].trtype){
-
-                                var color = '';
-                                var zhengfu = '';
-                                if(prop=="1"){
-                                    color= deitem[j].trtype==0?"red":"green";
-                                    zhengfu =deitem[j].trtype==0?"-":"+";
-                                }else{
-                                    color=  deitem[j].trtype==1?"red":"green";
-                                    zhengfu = deitem[j].trtype==1?"-":"+";
-                                }
-
-                                strdetail+='<li class="mui-table-view-cell" value="'+deitem[j].wid+'">'+
-                                    '<div class="mui-slider-right mui-disabled">'+
-                                    '<a class="mui-btn mui-btn-red">删除</a>'+
-                                    '</div>'+
-                                    '<div class="mui-slider-handle mui-table">' +
-                                    '<div style="float:left;width:30%;"><label>'+new Date(deitem[j].updatetime).Format('yyyy-MM-dd')+'</label>:</div>'+
-                                    '<div style="float:left;"><label><span>'+(deitem[j].remark==undefined?"":deitem[j].remark)+'</span></label></div>'+
-                                    '<div style="float:right;"><span class="mui-text-right" style="color:'+color+';">'+zhengfu+'  '+number_format(deitem[j].trnum,2,".",",")+'</span></div>'+
-                                    '</div>'+
-                                    '</li>'
-                            }
-                        }
                         //拼接基本信息
                         var cardhtml =
                             '<div class="mui-card" style="margin: 15px 0px;">'+
                             '<ul class="mui-table-view mui-table-view-chevron">'+
                             '<li class="mui-table-view-cell mui-collapse">'+
-                            '<a class="mui-navigate-right" style="color:'+(prop==1?"green":"red")+'" href="#">'+(prop==1?"资":"债")+'|'+accname+' | '+account+'  <span class="funds" style="float: right"> '+funds_cn+number_format(balance,2,".",",")+'</span></a>'+
-                            '<ul class="mui-table-view mui-table-view-chevron">'+strdetail+
+                            '<a class="mui-navigate-right" aid="'+aid+'" prop="'+prop+'"  style="color:'+(prop==1?"green":"red")+'" href="#">'+(prop==1?"资":"债")+'|'+accname+' | '+account+'  <span class="funds" style="float: right"> '+funds_cn+number_format(balance,2,".",",")+'</span></a>'+
+                            '<ul class="mui-table-view mui-table-view-chevron">'+
                             '</ul>'+
                             '</div>';
 
                         $("#container").append(cardhtml);
                     }
                 binddelbtn();
+                bindquerymoneydetail();
 
                 //设置总金额
                 var finalmoney = totalmoney/100;

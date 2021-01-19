@@ -2,11 +2,7 @@ package com.luxinx.service;
 
 import com.luxinx.bean.BeanAccount;
 import com.luxinx.bean.BeanWater;
-import com.luxinx.bean.BeanWaterVO;
-import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
@@ -14,11 +10,13 @@ import java.util.Map;
  * 后台统一接口方法
  */
 public interface ServiceDataAccount {
+
     /**
      * 查询所有账户以及关联的流水信息
-     * @return 账户+流水信息
+     * @param id 账户Account主建
+     * @return 流水信息
      */
-    List<BeanWaterVO> queryAllAccounts();
+    List<BeanWater> queryAccountInfoById(String id);
 
     /**
      * 查询所有账户以及关联的流水信息

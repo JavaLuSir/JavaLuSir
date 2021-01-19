@@ -44,8 +44,8 @@
         $.ajax({
             url:host+'/rest/account',
             type:'POST',
-            beforeSend:function(){
-
+            beforeSend:function(request){
+                request.setRequestHeader("token",token);
             },
             success:function(result){
                 var restobj=JSON.parse(result);
@@ -85,6 +85,9 @@ var del = function(id){
                 url:host+'/rest/delaccount',
                 method:'POST',
                 data:{"id":id},
+                beforeSend:function(request){
+                    request.setRequestHeader("token",token);
+                },
                 success:function(){
                     mui.toast("已删除！");
                     setTimeout(function(){

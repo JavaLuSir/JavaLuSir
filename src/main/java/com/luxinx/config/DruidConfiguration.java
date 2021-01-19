@@ -36,7 +36,7 @@ public class DruidConfiguration {
         servletRegistrationBean.addUrlMappings("/druid/*");    //指定拦截器只拦截druid管理页面的请求
         HashMap<String, String> initParam = new HashMap<String,String>();
         initParam.put("loginUsername", "admin");    //登录druid管理页面的用户名
-        initParam.put("loginPassword", "admin");    //登录druid管理页面的密码
+        initParam.put("loginPassword", "G9ru4Ss1u3S0iz!u");    //登录druid管理页面的密码
         initParam.put("resetEnable", "true");       //是否允许重置druid的统计信息
         initParam.put("allow", "");         //ip白名单，如果没有设置或为空，则表示允许所有访问
         servletRegistrationBean.setInitParameters(initParam);

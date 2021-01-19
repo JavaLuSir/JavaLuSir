@@ -3,10 +3,8 @@ package com.luxinx.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.luxinx.bean.BeanAccount;
 import com.luxinx.bean.BeanWater;
-import com.luxinx.bean.BeanWaterVO;
 import com.luxinx.service.ServiceDataAccount;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -32,8 +30,8 @@ public class ControllerAccount {
     }
 
     @RequestMapping("/list")
-    public String list() {
-        List<BeanWaterVO> accountlist = serviceDataAccount.queryAllAccounts();
+    public String list(@RequestParam String id) {
+        List<BeanWater> accountlist = serviceDataAccount.queryAccountInfoById(id);
         return JSONObject.toJSONString(accountlist);
     }
 

@@ -95,8 +95,8 @@
             dataType:'json',
             data:JSON.stringify(accountparam),
             contentType:'application/json',
-            beforeSend:function(){
-               console.log(accountparam)
+            beforeSend:function(request){
+                request.setRequestHeader("token",token);
             },
             success:function(result){
                 if(result.code&&result.code==0){
