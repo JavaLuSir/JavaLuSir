@@ -69,6 +69,7 @@ public class Tzcrond {
             try {
                 //获取基金编码/股票代码
                 String tcode = m.get("TCODE") + "";
+                String aid = m.get("AID") + "";
                 //获取上日请求的URL
                 String lastUrlStr = paddingURL(tcode, lastDateStr);
                 //获取上个交易日的基金净值
@@ -112,7 +113,7 @@ public class Tzcrond {
                 totalresult.setScale(2,BigDecimal.ROUND_HALF_DOWN);
                 paramMap.put("TOTALEARN", String.valueOf(totalresult.floatValue()));
 
-                serviceDataAccount.updateTouziInfo(tcode, paramMap);
+                serviceDataAccount.updateTouziInfo(tcode,aid, paramMap);
             } catch (Exception e) {
                 e.printStackTrace();
             }

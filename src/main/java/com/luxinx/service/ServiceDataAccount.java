@@ -78,7 +78,7 @@ public interface ServiceDataAccount {
      * 更新投资表字段
      * @return
      */
-    void updateTouziInfo(String tcode ,Map<String,String> touziMap);
+    void updateTouziInfo(String tcode,String aid ,Map<String,String> touziMap);
     /**
      * 更新投资表字段
      * @return

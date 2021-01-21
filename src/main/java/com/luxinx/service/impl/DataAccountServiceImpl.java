@@ -163,7 +163,7 @@ public class DataAccountServiceImpl implements ServiceDataAccount {
     }
 
     @Override
-    public void updateTouziInfo(String tcode,Map<String, String> touziMap) {
+    public void updateTouziInfo(String tcode,String aid,Map<String, String> touziMap) {
         Set<String> kset = touziMap.keySet();
         StringBuilder updateStr = new StringBuilder("UPDATE T_TOUZI SET ");
         StringBuilder sbd = new StringBuilder();
@@ -171,7 +171,7 @@ public class DataAccountServiceImpl implements ServiceDataAccount {
             sbd.append(mpkey).append("='").append(touziMap.get(mpkey)).append("',");
         }
         String str = sbd.substring(0, sbd.length() - 1);
-        str+= " WHERE TCODE='"+tcode+"'";
+        str+= " WHERE TCODE='"+tcode+"' AND AID='"+aid+"'";
         updateStr.append(str);
         System.out.println(updateStr.toString());
         jdbcTemplate.update(updateStr.toString());
