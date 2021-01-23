@@ -93,38 +93,39 @@
                 {
                     name: '当日收益情况',
                     type: 'bar',
-                    barWidth:'100%',
+                    barWidth: '100%',
                     stack: '总量',
                     barCategoryGap: '1%',
                     label: {
                         show: true,
-                        formatter:'{b}   {c}'
+                        formatter: '{b}   {c}'
                     },
-                    itemStyle:{
-                        color:'#129eff',
+                    itemStyle: {
+                        color: '#129eff',
                         colorAlpha: 0.5,
-                        borderColor:'#666',
-                        borderWidth:1
+                        borderColor: '#666',
+                        borderWidth: 1
                     },
                     data: []
                 }
             ]
         };
         $.ajax({
-            url:host + '/rest/dayfunds',
+            url: host + '/rest/dayfunds',
             type: 'GET',
             contentType: 'application/json',
             beforeSend: function (request) {
                 request.setRequestHeader("token", token);
             },
-            success:function (result) {
-                console.log(result)
-                option.series[0].data=JSON.parse(result);
+            success: function (result) {
+                var objdata = JSON.parse(result);
+                    option.title.subtext = objdata[0].datestr;
+                    option.series[0].data = objdata;
                 if (option && typeof option === "object") {
                     barChart.setOption(option, true);
                 }
             },
-            error:function () {
+            error: function () {
 
             }
 
@@ -135,18 +136,16 @@
     initDayMoney();
 
 
-
-
     var getVirtulData = function (year) {
         $.ajax({
-            url: host + '/rest/heatmap?year='+year,
+            url: host + '/rest/heatmap?year=' + year,
             type: 'GET',
             contentType: 'application/json',
             beforeSend: function (request) {
                 request.setRequestHeader("token", token);
             },
             success: function (result) {
-                initheatmap(year,JSON.parse(result));
+                initheatmap(year, JSON.parse(result));
             },
             error: function () {
                 mui.toast('网络错误');
@@ -154,12 +153,12 @@
         })
     }
 
-    var initheatmap = function (year,data) {
+    var initheatmap = function (year, data) {
         var option = {
             title: {
                 top: 30,
                 left: 'center',
-                text: year+'年盈亏统计'
+                text: year + '年盈亏统计'
             },
             tooltip: {},
             visualMap: {
