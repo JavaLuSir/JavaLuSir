@@ -89,5 +89,16 @@ public interface ServiceDataAccount {
      * @return
      */
     List<Map<String,Object>> queryTodayTouziMoney(String datestr);
+    /**
+     * 查询当前热力图数据
+     * @param datestr 年度字符串
+     * @return
+     */
+    List<Map<String,Object>> queryHeatMapMoney(String datestr);
+    /**
+     * 查询当日基金贡献额度
+     * @return
+     */
+    List<Map<String,Object>> queryDayFunds();
 
 }

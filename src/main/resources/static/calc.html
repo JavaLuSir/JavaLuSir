@@ -2,7 +2,7 @@
 <html style="height: 100%">
 <head>
     <meta charset="utf-8">
-    <title>热力图</title>
+    <title>统计</title>
     <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
@@ -18,10 +18,11 @@
 </style>
 <body style="height: 100%; margin: 0">
 <header class="mui-bar mui-bar-nav">
-    <h1 class="mui-title">热力图</h1>
+    <h1 class="mui-title">统计</h1>
 </header>
-<div id="container" style="height:100%;width:100%;margin-top:44px;">
-
+<div id="container" style="height:30%;width:100%;margin-top:44px;">
+</div>
+<div id="baritem" style="height: 100%">
 </div>
 
 <!--底部菜单-->
@@ -50,101 +51,174 @@
 <script src="./js/mui.min.js"></script>
 <script src="./js/common.js"></script>
 <script src="./js/jQuery.min.js"></script>
-<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts@4/dist/echarts.min.js"></script>
-<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts-gl@1/dist/echarts-gl.min.js"></script>
-<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts-stat@1/dist/ecStat.min.js"></script>
-<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts@4/dist/extension/dataTool.min.js"></script>
-<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts@4/map/js/china.js"></script>
-<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts@4/map/js/world.js"></script>
-<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts@4/dist/extension/bmap.min.js"></script>
+<script type="text/javascript" src="./js/echarts.js"></script>
 <script type="text/javascript">
     var dom = document.getElementById("container");
     var myChart = echarts.init(dom);
-    var app = {};
-    option = null;
-
-    function getVirtulData(year) {
-
-        var date = +echarts.number.parseDate(year + '-01-01');
-        var end = +echarts.number.parseDate((+year + 1) + '-01-01');
-        var dayTime = 3600 * 24 * 1000;
-        var data = [];
-        for (var time = date; time < end; time += dayTime) {
-            data.push([
-                echarts.format.formatTime('yyyy-MM-dd', time),
-                Math.floor(Math.random() * 10000)
-            ]);
-        }
-        return data;
-    }
-
-    option = {
-        title: {
-            top: 30,
-            left: 'center',
-            text: '2016年某人每天的步数'
-        },
-        tooltip: {},
-        visualMap: {
-            type: 'piecewise',
-            min: 0,
-            max: 10000,
-            range: [0, 10000],
-            formatter: function (value) {
-                return 'aaaa' + value; // 范围标签显示内容。
+    var bardom = document.getElementById("baritem");
+    var barChart = echarts.init(bardom);
+    var initDayMoney = function () {
+        var option = {
+            title: {
+                text: '日基金贡献额度',
+                subtext: 'From ExcelHome',
             },
-            inRange:{
-                color:['blue','red']
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {            // 坐标轴指示器，坐标轴触发有效
+                    type: 'shadow'       // 默认为直线，可选为：'line' | 'shadow'
+                }
             },
-            categories: [
-                '亏损', '赚钱'
-            ],
-            type: 'piecewise',
-            orient: 'horizontal',
-            left: 'center',
-            top: 65,
-            textStyle: {
-                color: '#000'
+            grid: {
+                top: 80,
+                bottom: 60
+            },
+            xAxis: {
+                type: 'value',
+                position: 'top',
+                splitLine: {
+                    lineStyle: {
+                        type: 'dashed'
+                    }
+                }
+            },
+            yAxis: {
+                type: 'category',
+                axisLine: {show: false},
+                axisLabel: {show: false},
+                axisTick: {show: false},
+                splitLine: {show: false}
+            },
+            series: [
+                {
+                    name: '当日收益情况',
+                    type: 'bar',
+                    barWidth:'100%',
+                    stack: '总量',
+                    barCategoryGap: '1%',
+                    label: {
+                        show: true,
+                        formatter:'{b}   {c}'
+                    },
+                    itemStyle:{
+                        color:'#129eff',
+                        colorAlpha: 0.5,
+                        borderColor:'#666',
+                        borderWidth:1
+                    },
+                    data: []
+                }
+            ]
+        };
+        $.ajax({
+            url:host + '/rest/dayfunds',
+            type: 'GET',
+            contentType: 'application/json',
+            beforeSend: function (request) {
+                request.setRequestHeader("token", token);
+            },
+            success:function (result) {
+                console.log(result)
+                option.series[0].data=JSON.parse(result);
+                if (option && typeof option === "object") {
+                    barChart.setOption(option, true);
+                }
+            },
+            error:function () {
+
             }
-        },
-        calendar: {
-            top: 120,
-            left: 30,
-            right: 30,
-            width: 'auto',
-            cellSize: 6,
-            range: '2021',
-            itemStyle: {
-                borderWidth: 0.5
-            },
-            dayLabel: {
-                nameMap: 'cn',
-                fontSize: '6',
-                padding:[0,5]
-            },
-            monthLabel: {
-                nameMap: [
-                    '一月', '二月', '三月',
-                    '四月', '五月', '六月',
-                    '七月', '八月', '九月',
-                    '十月', '十一月', '十二月'
-                ],
-                fontSize: '6',
-                verticalAlign:'middle'
-            },
-            orient: 'horizontal',
-            yearLabel: {show: false}
-        },
-        series: {
-            type: 'heatmap',
-            coordinateSystem: 'calendar',
-            data: getVirtulData(2021)
-        }
-    };
-    ;
-    if (option && typeof option === "object") {
-        myChart.setOption(option, true);
+
+        });
+
+
     }
+    initDayMoney();
+
+
+
+
+    var getVirtulData = function (year) {
+        $.ajax({
+            url: host + '/rest/heatmap?year='+year,
+            type: 'GET',
+            contentType: 'application/json',
+            beforeSend: function (request) {
+                request.setRequestHeader("token", token);
+            },
+            success: function (result) {
+                initheatmap(year,JSON.parse(result));
+            },
+            error: function () {
+                mui.toast('网络错误');
+            }
+        })
+    }
+
+    var initheatmap = function (year,data) {
+        var option = {
+            title: {
+                top: 30,
+                left: 'center',
+                text: year+'年盈亏统计'
+            },
+            tooltip: {},
+            visualMap: {
+                type: 'piecewise',
+                min: 0,
+                max: 10000,
+                range: [0, 10000],
+                type: 'piecewise',
+                orient: 'horizontal',
+                left: 'center',
+                top: 65,
+                textStyle: {
+                    color: '#000'
+                },
+                pieces: [
+                    {gt: 0, color: 'red', colorAlpha: 0.5, label: '赚钱'},
+                    {value: 0, color: 'white', label: '保本'},
+                    {lt: 0, color: 'blue', colorAlpha: 0.5, label: '亏损'}
+                ]
+            },
+            calendar: {
+                top: 120,
+                left: 30,
+                right: 30,
+                width: 'auto',
+                cellSize: 6,
+                range: year,
+                itemStyle: {
+                    borderWidth: 0.5
+                },
+                dayLabel: {
+                    nameMap: 'cn',
+                    fontSize: '6',
+                    padding: [0, 5]
+                },
+                monthLabel: {
+                    nameMap: [
+                        '一月', '二月', '三月',
+                        '四月', '五月', '六月',
+                        '七月', '八月', '九月',
+                        '十月', '十一月', '十二月'
+                    ],
+                    fontSize: '6',
+                    verticalAlign: 'middle'
+                },
+                orient: 'horizontal',
+                yearLabel: {show: false}
+            },
+            series: {
+                type: 'heatmap',
+                coordinateSystem: 'calendar',
+                data: data
+            }
+        };
+        if (option && typeof option === "object") {
+            myChart.setOption(option, true);
+        }
+    }
+    getVirtulData(2021);
 </script>
 </body>
 </html>

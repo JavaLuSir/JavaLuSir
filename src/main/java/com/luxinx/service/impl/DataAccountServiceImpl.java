@@ -189,6 +189,22 @@ public class DataAccountServiceImpl implements ServiceDataAccount {
         return jdbcTemplate.queryForList(sql);
     }
 
+    @Override
+    public List<Map<String, Object>> queryHeatMapMoney(String datestr) {
+        String quersql ="SELECT DATE_FORMAT(TRDATE,'%Y-%m-%d') DAYS,SUM(CASE TRTYPE WHEN 0 THEN -TRNUM ELSE TRNUM END) TOTAL from T_WATER T WHERE (TRADEKIND='71' or TRADEKIND='90') AND DATE_FORMAT(TRDATE,'%Y')=:datestr GROUP BY DAYS";
+        NamedParameterJdbcTemplate npjt = new NamedParameterJdbcTemplate(this.jdbcTemplate.getDataSource());
+        MapSqlParameterSource param = new MapSqlParameterSource();
+        param.addValue("datestr",datestr);
+        return npjt.queryForList(quersql,param);
+    }
+
+    @Override
+    public List<Map<String, Object>> queryDayFunds() {
+        String sql="SELECT T.TNAME name,T.TEARN value,T.DATESTR datestr FROM T_TOUZI T WHERE T.TEARN IS NOT NULL ORDER BY TEARN ";
+        NamedParameterJdbcTemplate npjt = new NamedParameterJdbcTemplate(this.jdbcTemplate.getDataSource());
+        return npjt.queryForList(sql,new HashMap<>());
+    }
+
     /**
      * 交易转账更新余额
      *

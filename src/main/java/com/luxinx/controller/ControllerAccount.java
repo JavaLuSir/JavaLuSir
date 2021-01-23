@@ -1,5 +1,6 @@
 package com.luxinx.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.luxinx.bean.BeanAccount;
 import com.luxinx.bean.BeanWater;
@@ -10,9 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 后台统一请求接口方法
@@ -92,6 +91,40 @@ public class ControllerAccount {
     public String queryyearreport(@RequestParam String datestr){
         List<Map<String, Object>> yearReport = serviceDataAccount.queryYearReport(datestr);
         return JSONObject.toJSONString(yearReport);
+    }
+
+    @RequestMapping("/heatmap")
+    public String heatmap(@RequestParam String year){
+        List<Map<String, Object>> rst = serviceDataAccount.queryHeatMapMoney(year);
+        List<List> daymoney = new ArrayList<>();
+        for(Map<String,Object> h:rst){
+            List<String> t = new ArrayList<>();
+            t.add(h.get("DAYS")+"");
+            t.add(h.get("TOTAL")+"");
+            daymoney.add(t);
+        }
+
+        return JSONObject.toJSONString(daymoney);
+    }
+
+    @RequestMapping("/dayfunds")
+    public String dayfunds(){
+     //  String s= "[{'name':'xxx','value': '-0.07','itemStyle':{'color':'#129eff'}},{'name':'bbb','value': '0.07','itemStyle':{'color':'red'}}]";
+        List<Map<String, Object>> fundays = serviceDataAccount.queryDayFunds();
+        for(Map<String,Object> funds:fundays){
+            Map<String,String> color = new HashMap<>();
+            Map<String,String> label = new HashMap<>();
+            if((funds.get("value")+"").startsWith("-")){
+                color.put("color","#129eff");
+                label.put("position","right");
+            }else {
+                color.put("color","red");
+                label.put("position","left");
+            }
+            funds.put("itemStyle",color);
+            funds.put("label",label);
+        }
+        return JSON.toJSONString(fundays);
     }
 
 }
