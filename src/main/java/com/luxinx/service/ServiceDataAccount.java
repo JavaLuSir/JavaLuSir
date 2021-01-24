@@ -106,4 +106,10 @@ public interface ServiceDataAccount {
      * @return
      */
     List<Map<String,Object>> monthFunds(String datestr);
+    /**
+     * 查询基金总共盈利
+     * @param datestr 日期到月
+     * @return
+     */
+    List<Map<String,Object>> earnTotal(String datestr);
 }

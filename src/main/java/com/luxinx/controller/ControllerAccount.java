@@ -178,4 +178,9 @@ public class ControllerAccount {
         return JSON.toJSONString(result);
     }
 
+    @RequestMapping("/earntotal")
+    public String earntotal(@RequestParam String datestr) {
+        List<Map<String, Object>> erantotal = serviceDataAccount.earnTotal(datestr);
+        return JSON.toJSONString(erantotal);
+    }
 }
