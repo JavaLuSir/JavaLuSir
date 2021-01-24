@@ -290,20 +290,6 @@
         })
     }
     $(function () {
-        mui.init({
-            pullRefresh: {
-                container: '#pullrefresh',
-                down: {
-                    style: 'circle',
-                    callback: pulldownRefresh
-                },
-                up: {
-                    auto: true,
-                    contentrefresh: '正在加载...',
-                    callback: pullupRefresh
-                }
-            }
-        });
         initData();
     })
 </script>

@@ -153,7 +153,19 @@ public class DataAccountServiceImpl implements ServiceDataAccount {
 
     @Override
     public List<Map<String, Object>> queryYearReport(String datestr) {
-        return jdbcTemplate.queryForList("SELECT sum(TRNUM) CASH,  case  TRADEKIND when 10 then '居家'when 20 then '食品' when 30 then '交通' when 40 then '投资' when 50 then '还款' when 61 then '工资' when 71 then '投资收益' when 81 then '其他收益'when 90 then '投资亏损' end TRADEKIND FROM T_WATER where DEL=0 and TRADEKIND<>'00'  AND date_format(TRDATE,'%Y') = ? group by TRADEKIND ",datestr);
+        String sql ="SELECT sum(TRNUM) CASH,  case  TRADEKIND when 10 then '居家'when 20 then '食品' when 30 then '交通' when 40 then '投资' when 50 then '还款' when 61 then '工资' when 71 then '投资收益' when 81 then '其他收益'when 90 then '投资亏损' end TRADEKIND FROM T_WATER where DEL=0 and TRADEKIND<>'00'  AND date_format(TRDATE,'%Y') = :datestr group by TRADEKIND ";
+        NamedParameterJdbcTemplate npjt = new NamedParameterJdbcTemplate(this.jdbcTemplate.getDataSource());
+        MapSqlParameterSource param = new MapSqlParameterSource();
+        param.addValue("datestr",datestr);
+        List<Map<String, Object>> result =  npjt.queryForList(sql,param);
+        for (Map<String,Object> m:result){
+           if( m.get("TRADEKIND").equals("还款")){
+               BigDecimal bcm = new BigDecimal(m.get("CASH")+"");
+               BigDecimal huankuan = bcm.divide(new BigDecimal(2));
+               m.put("CASH",huankuan.floatValue());
+           }
+        }
+        return result;
     }
 
     @Override
