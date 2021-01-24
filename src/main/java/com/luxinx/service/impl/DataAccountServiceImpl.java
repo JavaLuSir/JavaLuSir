@@ -217,6 +217,15 @@ public class DataAccountServiceImpl implements ServiceDataAccount {
         return npjt.queryForList(sql,new HashMap<>());
     }
 
+    @Override
+    public List<Map<String, Object>> monthFunds(String datestr) {
+        String sql="select SUM(CASE TRTYPE WHEN 0 THEN -TRNUM ELSE TRNUM END) TOTAL, DATE_FORMAT(TRDATE,'%Y-%m-%d') DAYS from T_WATER where (TRADEKIND='71' or TRADEKIND='90') AND DATE_FORMAT(TRDATE,'%Y-%m')=:datestr GROUP BY DAYS ";
+        NamedParameterJdbcTemplate npjt = new NamedParameterJdbcTemplate(this.jdbcTemplate.getDataSource());
+        MapSqlParameterSource param = new MapSqlParameterSource();
+        param.addValue("datestr",datestr);
+        return npjt.queryForList(sql,param);
+    }
+
     /**
      * 交易转账更新余额
      *

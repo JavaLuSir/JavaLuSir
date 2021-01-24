@@ -20,9 +20,11 @@
 <header class="mui-bar mui-bar-nav">
     <h1 class="mui-title">统计</h1>
 </header>
-<div id="container" style="height:30%;width:100%;margin-top:44px;">
+<div id="container" style="height:30%;width:92%;margin-left:4%;margin-top:44px;">
 </div>
-<div id="baritem" style="height: 100%">
+<div id="calendaritem" style="height: 80%;width:92%;margin-left:4%;">
+</div>
+<div id="baritem" style="height: 100%;width:92%;margin-left:4%;">
 </div>
 
 <!--底部菜单-->
@@ -53,15 +55,170 @@
 <script src="./js/jQuery.min.js"></script>
 <script type="text/javascript" src="./js/echarts.js"></script>
 <script type="text/javascript">
+    var ful = new Date();
+    var month = (ful.getMonth() + 1)+'';
+    var fullmonth = month.length<2?"0"+month:month
     var dom = document.getElementById("container");
     var myChart = echarts.init(dom);
+
     var bardom = document.getElementById("baritem");
     var barChart = echarts.init(bardom);
+
+    var initMonthMoney = function () {
+        var calenitem = document.getElementById("calendaritem");
+        var calenChart = echarts.init(calenitem);
+        var dateList = [
+            ['2021-1-1', '-100'],
+            ['2021-1-2', '+152'],
+            ['2021-1-3', '300'],
+            ['2021-1-4', '300'],
+            ['2021-1-5', '300'],
+            ['2021-1-6', '300'],
+            ['2021-1-7', '300'],
+            ['2021-1-8', '300'],
+            ['2021-1-9', '300'],
+            ['2021-1-10', '300'],
+            ['2021-1-11', '-300'],
+            ['2021-1-12', '-30'],
+            ['2021-1-13', '300'],
+            ['2021-1-14', '-130'],
+            ['2021-1-15', '300'],
+            ['2021-1-16', '300'],
+            ['2021-1-17', '300'],
+            ['2021-1-18', '300'],
+            ['2021-1-19', '300'],
+            ['2021-1-20', '300'],
+            ['2021-1-21', '300'],
+            ['2021-1-22', '300'],
+            ['2021-1-23', '300'],
+            ['2021-1-24', '300'],
+            ['2021-1-25', '300'],
+            ['2021-1-26', '300'],
+            ['2021-1-27', '300'],
+            ['2021-1-28', '300'],
+            ['2021-1-29', '300'],
+            ['2021-1-30', '300']
+        ];
+        /*var heatmapData = [];
+         for (var i = 0; i < dateList.length; i++) {
+             heatmapData.push([
+                 dateList[i][0],
+                 '',
+                 dateList[i][1]
+             ]);
+         }
+*/
+
+
+
+        $.ajax({
+            url: host + '/rest/monthfunds?datestr=' + ful.getFullYear() + '-' + fullmonth,
+            type: 'POST',
+            contentType: 'application/json',
+            beforeSend: function (request) {
+                request.setRequestHeader("token", token);
+            },
+            success: function (result) {
+                var heatmapData = JSON.parse(result);
+                var option = {
+                    tooltip: {
+                        formatter: function (params) {
+                            return '收益: ' + params.value[1].toFixed(2);
+                        }
+                    },
+                    title: {
+                        top: '20',
+                        left: 'left',
+                        text: month + '月盈亏统计'
+                    },
+
+                    visualMap: {
+                        type: 'piecewise',
+                        orient: 'horizontal',
+                        left: 'center',
+                        top: 65,
+                        textStyle: {
+                            color: '#000'
+                        },
+                        pieces: [
+                            {gt: 0, color: 'red', colorAlpha: 0.5, label: '赚钱'},
+                            {value: 0, color: 'white', label: '保本'},
+                            {lt: 0, color: 'blue', colorAlpha: 0.5, label: '亏损'}
+                        ]
+                    },
+                    calendar: [{
+                        left: 'center',
+                        top: 'middle',
+                        cellSize: ['auto', '70'],
+                        orient: 'vertical',
+                        dayLabel: {
+                            firstDay: 7,
+                            nameMap: 'cn'
+                        },
+                        yearLabel: {
+                            show: false
+                        },
+                        monthLabel: {
+                            show: false
+                        },
+                        range: ful.getFullYear() + "-" + fullmonth
+                    }],
+
+                    series: [{
+                        type: 'scatter',
+                        coordinateSystem: 'calendar',
+                        symbolSize: 1,
+                        label: {
+                            show: true,
+                            formatter: function (params) {
+                                var d = echarts.number.parseDate(params.value[0]);
+                                return d.getDate() + '\n\n' + params.value[2] + '\n\n'
+                            },
+                            color: '#000',
+                            fontSize : 10,
+                            fontWeight: 700,
+                        },
+                        itemStyle: 'red',
+                        data: heatmapData
+                    }, {
+                        type: 'scatter',
+                        coordinateSystem: 'calendar',
+                        symbolSize: 1,
+                        label: {
+                            show: true,
+                            formatter: function (params) {
+                                return '\n\n\n' + (params.value[3] || '');
+                            },
+                            fontSize: 14,
+                            fontWeight: 700,
+                            color: '#a00'
+                        },
+                        data: heatmapData
+                    }, {
+                        name: '收益',
+                        type: 'heatmap',
+                        coordinateSystem: 'calendar',
+                        data: heatmapData
+                    }]
+                };
+
+                if (option && typeof option === "object") {
+                    calenChart.setOption(option, true);
+                }
+            },
+            error: function () {
+                mui.toast('网络错误');
+            }
+
+        });
+
+    }
+
     var initDayMoney = function () {
         var option = {
             title: {
                 text: '日基金贡献额度',
-                subtext: 'From ExcelHome',
+                subtext: '',
             },
             tooltip: {
                 trigger: 'axis',
@@ -110,9 +267,8 @@
                 }
             ]
         };
-        var dt = Math.random();
         $.ajax({
-            url: host + '/rest/dayfunds?dt='+dt,
+            url: host + '/rest/dayfunds',
             type: 'POST',
             contentType: 'application/json',
             beforeSend: function (request) {
@@ -120,28 +276,25 @@
             },
             success: function (result) {
                 var objdata = JSON.parse(result);
-                    option.title.subtext = objdata[0].datestr;
-                    option.series[0].data = objdata;
+                option.title.subtext = objdata[0].datestr;
+                option.series[0].data = objdata;
                 barChart.clear();
                 if (option && typeof option === "object") {
                     barChart.setOption(option, true);
                 }
             },
             error: function () {
-
+                mui.toast('网络错误');
             }
 
         });
-
-
     }
-    initDayMoney();
 
 
-    var getVirtulData = function (year) {
+    var getYearData = function (year) {
         var dt = Math.random();
         $.ajax({
-            url: host + '/rest/heatmap?dt='+dt+'&year=' + year,
+            url: host + '/rest/heatmap?dt=' + dt + '&year=' + year,
             type: 'POST',
             contentType: 'application/json',
             beforeSend: function (request) {
@@ -169,7 +322,6 @@
                 min: 0,
                 max: 10000,
                 range: [0, 10000],
-                type: 'piecewise',
                 orient: 'horizontal',
                 left: 'center',
                 top: 65,
@@ -221,9 +373,10 @@
             myChart.setOption(option, true);
         }
     }
-    var ful = new Date();
     var yeardate = ful.getFullYear();
-    getVirtulData(yeardate);
+    getYearData(yeardate);
+    initMonthMoney();
+    initDayMoney();
 </script>
 </body>
 </html>

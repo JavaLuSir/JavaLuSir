@@ -100,5 +100,10 @@ public interface ServiceDataAccount {
      * @return
      */
     List<Map<String,Object>> queryDayFunds();
-
+    /**
+     * 查询当月基金显示
+     * @param datestr 日期年月
+     * @return
+     */
+    List<Map<String,Object>> monthFunds(String datestr);
 }
