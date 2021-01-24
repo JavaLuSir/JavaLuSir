@@ -121,6 +121,7 @@
                 var objdata = JSON.parse(result);
                     option.title.subtext = objdata[0].datestr;
                     option.series[0].data = objdata;
+                barChart.clear();
                 if (option && typeof option === "object") {
                     barChart.setOption(option, true);
                 }
@@ -213,6 +214,7 @@
                 data: data
             }
         };
+        myChart.clear();
         if (option && typeof option === "object") {
             myChart.setOption(option, true);
         }
