@@ -36,7 +36,8 @@
 <script src="./js/echarts.js"></script>
 
 <script>
-    var yeardate = '2021';
+    var ful = new Date();
+    var yeardate = ful.getFullYear();
     $(function(){
 
         var dom = document.getElementById("container");
@@ -59,6 +60,7 @@
             var selected = {};
             $.ajax({
                url:host+'/rest/queryyearreport',
+                type:'POST',
                data:{"datestr": yeardate},
                dataType:'json',
                 beforeSend:function(request){

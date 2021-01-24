@@ -110,9 +110,10 @@
                 }
             ]
         };
+        var dt = Math.random();
         $.ajax({
-            url: host + '/rest/dayfunds',
-            type: 'GET',
+            url: host + '/rest/dayfunds?dt='+dt,
+            type: 'POST',
             contentType: 'application/json',
             beforeSend: function (request) {
                 request.setRequestHeader("token", token);
@@ -138,9 +139,10 @@
 
 
     var getVirtulData = function (year) {
+        var dt = Math.random();
         $.ajax({
-            url: host + '/rest/heatmap?year=' + year,
-            type: 'GET',
+            url: host + '/rest/heatmap?dt='+dt+'&year=' + year,
+            type: 'POST',
             contentType: 'application/json',
             beforeSend: function (request) {
                 request.setRequestHeader("token", token);
@@ -219,7 +221,9 @@
             myChart.setOption(option, true);
         }
     }
-    getVirtulData(2021);
+    var ful = new Date();
+    var yeardate = ful.getFullYear();
+    getVirtulData(yeardate);
 </script>
 </body>
 </html>
