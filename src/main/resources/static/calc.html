@@ -20,10 +20,14 @@
 <header class="mui-bar mui-bar-nav">
     <h1 class="mui-title">统计</h1>
 </header>
-<div id="container" style="height:30%;width:92%;margin-left:4%;margin-top:44px;">
+<div id="container" style="height:30%;width:100%;margin-left:1%;margin-top:44px;">
 </div>
-<div id="calendaritem" style="height: 95%;width:92%;margin-left:4%;">
+<div style="font-weight:700;margin-left:3%;">年度收益：<span id="yearearn"></span></div>
+<hr/>
+<div id="calendaritem" style="height: 95%;width:92%;margin-left:4%;padding-top:6%;">
 </div>
+<div style="font-weight:700;margin-left:3%;">月度收益:<span id="monthearn"></span></div>
+<hr/>
 <div id="baritem" style="height: 100%;width:92%;margin-left:4%;">
 </div>
 
@@ -64,6 +68,56 @@
     var bardom = document.getElementById("baritem");
     var barChart = echarts.init(bardom);
 
+    var initearn = function(){
+        $.ajax({
+            url: host + '/rest/earntotal?datestr='+ful.getFullYear(),
+            type: 'POST',
+            dataType:'json',
+            contentType: 'application/json',
+            beforeSend: function (request) {
+                request.setRequestHeader("token", token);
+            },
+            success: function (result) {
+                var earn =result[0]["TOTAL"];
+                var earncss ={};
+                if(earn>=0){
+                    earncss.color='red';
+                    earn="+"+earn;
+                }else{
+                    earncss.color='blue';
+                }
+                $("#yearearn").css(earncss).text(earn);
+            },
+            error: function () {
+                mui.toast('网络错误');
+            }
+
+        });
+        $.ajax({
+            url: host + '/rest/earntotal?datestr='+ful.getFullYear()+"-"+fullmonth,
+            type: 'POST',
+            dataType:'json',
+            contentType: 'application/json',
+            beforeSend: function (request) {
+                request.setRequestHeader("token", token);
+            },
+            success: function (result) {
+                var earn =result[0]["TOTAL"];
+                var earncss ={};
+                if(earn>=0){
+                   earncss.color='red';
+                   earn="+"+earn;
+                }else{
+                    earncss.color='blue';
+                }
+                $("#monthearn").css(earncss).text(earn);
+            },
+            error: function () {
+                mui.toast('网络错误');
+            }
+
+        });
+    }
     var initMonthMoney = function () {
         var calenitem = document.getElementById("calendaritem");
         var calenChart = echarts.init(calenitem);
@@ -79,11 +133,10 @@
                 var option = {
                     tooltip: {
                         formatter: function (params) {
-                            return '收益: ' + params.value[1].toFixed(2);
+                            return params.data[0]+' 收益: ' + params.data[2];
                         }
                     },
                     title: {
-                        top: '20',
                         left: 'left',
                         text: month + '月盈亏统计'
                     },
@@ -93,6 +146,7 @@
                         orient: 'horizontal',
                         left: 'center',
                         top: 65,
+                        show:false,
                         textStyle: {
                             color: '#000'
                         },
@@ -234,7 +288,6 @@
                 var objdata = JSON.parse(result);
                 option.title.subtext = objdata[0].datestr;
                 option.series[0].data = objdata;
-                barChart.clear();
                 if (option && typeof option === "object") {
                     barChart.setOption(option, true);
                 }
@@ -324,7 +377,6 @@
                 data: data
             }
         };
-        myChart.clear();
         if (option && typeof option === "object") {
             myChart.setOption(option, true);
         }
@@ -333,6 +385,7 @@
     getYearData(yeardate);
     initMonthMoney();
     initDayMoney();
+    initearn();
 </script>
 </body>
 </html>
