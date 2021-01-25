@@ -117,10 +117,10 @@ public class ControllerAccount {
             Map<String, String> label = new HashMap<>();
             if ((funds.get("value") + "").startsWith("-")) {
                 color.put("color", "#129eff");
-                label.put("position", "right");
+                //label.put("position", "right");
             } else {
                 color.put("color", "red");
-                label.put("position", "left");
+                //label.put("position", "left");
             }
             funds.put("itemStyle", color);
             funds.put("label", label);
