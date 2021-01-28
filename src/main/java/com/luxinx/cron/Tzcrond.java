@@ -22,8 +22,8 @@ public class Tzcrond {
     @Autowired
     private ServiceDataAccount serviceDataAccount;
 
-    //3.添加定时任务  周一到周五晚上21:15执行定时任务
-    @Scheduled(cron = "0 15 21 ? * MON-FRI")
+    //3.添加定时任务  周一到周五晚上22:10执行定时任务
+    @Scheduled(cron = "0 10 22 ? * MON-FRI")
     //或直接指定时间间隔，例如：5秒
     //@Scheduled(fixedRate = 10000)
     public void configureTasks() {
