@@ -24,8 +24,9 @@
 </div>
 <div style="font-weight:700;margin-left:3%;">年度收益：<span id="yearearn"></span></div>
 <hr/>
-<div id="calendaritem" style="height: 95%;width:92%;margin-left:4%;padding-top:6%;">
+<div id="calendaritem" style="height: 85%;width:92%;margin-left:4%;padding-top:6%;">
 </div>
+<div style="font-weight:700;margin-left:3%;"><a href="#" onclick="refresh();">点击更新</a></div>
 <div style="font-weight:700;margin-left:3%;">月度收益:<span id="monthearn"></span></div>
 <hr/>
 <div id="baritem" style="height: 100%;width:92%;margin-left:4%;">
@@ -67,7 +68,23 @@
 
     var bardom = document.getElementById("baritem");
     var barChart = echarts.init(bardom);
+    var refresh = function(){
+        $.ajax({
+            url: host + '/rest/refreshfunds',
+            type: 'POST',
+            dataType:'json',
+            contentType: 'application/json',
+            beforeSend: function (request) {
+                request.setRequestHeader("token", token);
+            },
+            success: function (result) {
 
+            },
+            error: function () {
+                mui.toast('网络错误');
+            }
+
+        });}
     var initearn = function(){
         $.ajax({
             url: host + '/rest/earntotal?datestr='+ful.getFullYear(),
@@ -263,6 +280,7 @@
                     barWidth: '100%',
                     stack: '总量',
                     barCategoryGap: '1%',
+                    
                     label: {
                         show: true,
                         formatter: '{b}   {c}'

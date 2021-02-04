@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.luxinx.bean.BeanAccount;
 import com.luxinx.bean.BeanWater;
+import com.luxinx.cron.Tzcrond;
 import com.luxinx.service.ServiceDataAccount;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.relational.core.sql.In;
@@ -22,6 +23,9 @@ import java.util.*;
 public class ControllerAccount {
     @Autowired
     private ServiceDataAccount serviceDataAccount;
+
+    @Autowired
+    private Tzcrond tzcrond;
 
     @RequestMapping("/doLogin")
     public String dologin() {
@@ -182,5 +186,11 @@ public class ControllerAccount {
     public String earntotal(@RequestParam String datestr) {
         List<Map<String, Object>> erantotal = serviceDataAccount.earnTotal(datestr);
         return JSON.toJSONString(erantotal);
+    }
+
+    @RequestMapping("/refreshfunds")
+    public String refreshfunds() {
+        tzcrond.configureTasks();
+        return "";
     }
 }
