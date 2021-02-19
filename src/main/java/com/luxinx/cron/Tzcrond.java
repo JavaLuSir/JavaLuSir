@@ -37,21 +37,24 @@ public class Tzcrond {
     private void updateAccountInfo() {
         List<Map<String, Object>> moneylist = serviceDataAccount.queryTodayTouziMoney(getLastDate());
 
-        for(Map<String, Object> m:moneylist){
-            String aid = m.get("AID")+"";
+        for (Map<String, Object> m : moneylist) {
+            String aid = m.get("AID") + "";
             Float trnum = Float.valueOf(m.get("TRNUM") + "");
-            String todayDateStr = getTodayDate();
-            Map<String,String> param = new HashMap<>();
-            param.put("AID",aid);
-            param.put("TRDATE",todayDateStr);
-            if(trnum>0){
-                param.put("TRKIND","71");
-                param.put("REMARK","基金收益");
-            }else{
-                param.put("TRKIND","90");
-                param.put("REMARK","基金亏损");
+            if (trnum == 0) {
+                continue;
             }
-            param.put("TRNUM",String.valueOf(Math.abs(trnum)));
+            String todayDateStr = getTodayDate();
+            Map<String, String> param = new HashMap<>();
+            param.put("AID", aid);
+            param.put("TRDATE", todayDateStr);
+            if (trnum > 0) {
+                param.put("TRKIND", "71");
+                param.put("REMARK", "基金收益");
+            } else {
+                param.put("TRKIND", "90");
+                param.put("REMARK", "基金亏损");
+            }
+            param.put("TRNUM", String.valueOf(Math.abs(trnum)));
             serviceDataAccount.addDetail(param);
         }
         serviceDataAccount.updateTouziTime(getTodayDate());
@@ -59,7 +62,7 @@ public class Tzcrond {
 
     }
 
-    private void updateTouziInfo(){
+    private void updateTouziInfo() {
         //获取上个交易日期
         String lastDateStr = getLastDate();
         //获取当天交易日期
@@ -78,8 +81,8 @@ public class Tzcrond {
                 String todayUrlStr = paddingURL(tcode, todayDateStr);
                 //获取今天交易日基金净值
                 String tprice = getPrice(todayUrlStr);
-                System.out.println(tcode+"--tprice:"+tprice);
-                System.out.println(tcode+"--lprice:"+lprice);
+                System.out.println(tcode + "--tprice:" + tprice);
+                System.out.println(tcode + "--lprice:" + lprice);
 
                 //构造更新数据参数
                 Map<String, String> paramMap = new HashMap<>();
@@ -110,15 +113,16 @@ public class Tzcrond {
                 BigDecimal basedecimal = new BigDecimal(m.get("TBASE").toString());
                 BigDecimal totaldeta = todayprice.subtract(basedecimal);
                 BigDecimal totalresult = numdecimal.multiply(totaldeta);
-                totalresult.setScale(2,BigDecimal.ROUND_HALF_DOWN);
+                totalresult.setScale(2, BigDecimal.ROUND_HALF_DOWN);
                 paramMap.put("TOTALEARN", String.valueOf(totalresult.floatValue()));
 
-                serviceDataAccount.updateTouziInfo(tcode,aid, paramMap);
+                serviceDataAccount.updateTouziInfo(tcode, aid, paramMap);
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
     }
+
     /**
      * 获取上个交易日的基金净值如果当天为周一获取周日时间
      *
@@ -133,7 +137,7 @@ public class Tzcrond {
         String wk = weeks[cd.get(Calendar.DAY_OF_WEEK) - 1];
         if (wk.equals("星期一")) {
             cd.add(Calendar.DATE, -3);
-        }else{
+        } else {
             cd.add(Calendar.DATE, -1);
         }
         return sdf.format(cd.getTime());
@@ -162,9 +166,9 @@ public class Tzcrond {
         String html = (String) tb.get("content");
         Document doc = Jsoup.parseBodyFragment(html);
         Element body = doc.body();
-        if(body.getElementsByClass("tor bold").first()==null){
+        if (body.getElementsByClass("tor bold").first() == null) {
             return "";
-        }else {
+        } else {
             return body.getElementsByClass("tor bold").first().text();
         }
     }
