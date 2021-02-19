@@ -193,4 +193,9 @@ public class ControllerAccount {
         tzcrond.configureTasks();
         return "";
     }
+
+    @RequestMapping("/fenbu")
+    public String fenbu() {
+        return JSON.toJSONString(serviceDataAccount.fenbu());
+    }
 }

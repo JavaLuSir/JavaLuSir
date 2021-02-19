@@ -240,6 +240,14 @@ public class DataAccountServiceImpl implements ServiceDataAccount {
         return  npjt.queryForList(sql,param);
     }
 
+    @Override
+    public List<Map<String, Object>> fenbu() {
+        String sql="SELECT ROUND(sum(TNUM*TBASE),2) CASH,case TZTYPE WHEN 1 THEN '股票' WHEN 2 THEN '黄金'  WHEN 3 THEN '存款'  WHEN 4 THEN '债券' WHEN 5 THEN '房产' WHEN 6 THEN '车' END KIND FROM T_TOUZI group by TZTYPE";
+        NamedParameterJdbcTemplate npjt = new NamedParameterJdbcTemplate(this.jdbcTemplate.getDataSource());
+        MapSqlParameterSource param = new MapSqlParameterSource();
+        return npjt.queryForList(sql,param);
+    }
+
     /**
      * 交易转账更新余额
      *

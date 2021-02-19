@@ -112,4 +112,10 @@ public interface ServiceDataAccount {
      * @return
      */
     List<Map<String,Object>> earnTotal(String datestr);
+
+    /**
+     *
+     * @return
+     */
+    List<Map<String,Object>> fenbu();
 }

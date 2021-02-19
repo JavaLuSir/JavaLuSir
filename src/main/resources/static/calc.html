@@ -31,7 +31,10 @@
 <hr/>
 <div id="baritem" style="height: 100%;width:92%;margin-left:4%;">
 </div>
+<hr/>
+<div id="fenbu" style="top:40px;width: 92%;margin-left:4%;height: 100%;">
 
+</div>
 <!--底部菜单-->
 <nav class="mui-bar mui-bar-tab">
     <a class="mui-tab-item" href="./account.html">
@@ -404,6 +407,88 @@
     initMonthMoney();
     initDayMoney();
     initearn();
+
+    $(function(){
+
+        var cc = document.getElementById("fenbu");
+        var fenbuchart = echarts.init(cc);
+        var option = null;
+        var data = genData();
+
+        // option =
+        function genData() {
+            var legendData = [];
+            var seriesData = [];
+            var selected = {};
+            $.ajax({
+                url:host+'/rest/fenbu',
+                type:'POST',
+                data:{"datestr": yeardate},
+                dataType:'json',
+                beforeSend:function(request){
+                    request.setRequestHeader("token",token);
+                },
+                success:function (result) {
+                    for(var i=0;i<result.length;i++){
+
+                        var kind = result[i].KIND;
+                        var cash = result[i].CASH;
+                        legendData.push(kind);
+                        seriesData.push({
+                            name: kind,
+                            value: cash
+                        });
+                        selected[kind] = result.length;
+                    }
+                    fenbuchart.setOption({
+                        title: {
+                            text: '投资占比',
+                            subtext: '投资类型分布',
+                            left: 'center'
+                        },
+                        tooltip: {
+                            trigger: 'item',
+                            formatter: '{a} <br/>{b} : {c} ({d}%)'
+                        },
+                        legend: {
+                            type: 'scroll',
+                            orient: 'vertical',
+                            right: 0,
+                            top: 0,
+                            bottom: 0,
+                            data: data.legendData,
+                            show: false,
+                            selected: data.selected
+                        },
+                        series: [
+                            {
+                                name: '类型',
+                                type: 'pie',
+                                radius: '55%',
+                                center: ['50%', '50%'],
+                                data: data.seriesData,
+                                emphasis: {
+                                    itemStyle: {
+                                        shadowBlur: 10,
+                                        shadowOffsetX: 0,
+                                        shadowColor: 'rgba(0, 0, 0, 0.5)'
+                                    }
+                                }
+                            }
+                        ]
+                    },true);
+
+                }
+            })
+
+            return {
+                legendData: legendData,
+                seriesData: seriesData,
+                selected: selected
+            };
+
+        };
+    })
 </script>
 </body>
 </html>
