@@ -212,7 +212,7 @@ public class DataAccountServiceImpl implements ServiceDataAccount {
 
     @Override
     public List<Map<String, Object>> queryDayFunds() {
-        String sql="SELECT T.TNAME name,T.TEARN value,T.DATESTR datestr FROM T_TOUZI T WHERE T.TEARN IS NOT NULL ORDER BY TEARN ";
+        String sql="SELECT T.TNAME name,T.TEARN value,T.DATESTR datestr FROM T_TOUZI T WHERE T.TOTALEARN IS NOT NULL ORDER BY TEARN ";
         NamedParameterJdbcTemplate npjt = new NamedParameterJdbcTemplate(this.jdbcTemplate.getDataSource());
         return npjt.queryForList(sql,new HashMap<>());
     }
