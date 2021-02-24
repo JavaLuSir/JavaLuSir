@@ -38,8 +38,8 @@ public class Tzcrond {
     public void configureTasks() {
         //更新投资账户金额
         updateTouziInfo();
-        //更新账户变动资金流水
-        //updateAccountInfo();
+        //新账户变动资金流水
+        updateAccountInfo();
 
     }
 
@@ -58,10 +58,18 @@ public class Tzcrond {
             param.put("TRDATE", todayDateStr);
             if (trnum > 0) {
                 param.put("TRKIND", "71");
-                param.put("REMARK", "基金收益");
+                String remark = "基金收益";
+                if(aid.equals("38")||aid.equals("52")){
+                    remark="股票收益";
+                }
+                param.put("REMARK", remark);
             } else {
+                String remark = "基金亏损";
+                if(aid.equals("38")||aid.equals("52")){
+                    remark="股票亏损";
+                }
                 param.put("TRKIND", "90");
-                param.put("REMARK", "基金亏损");
+                param.put("REMARK", remark);
             }
             param.put("TRNUM", String.valueOf(Math.abs(trnum)));
             serviceDataAccount.addDetail(param);
