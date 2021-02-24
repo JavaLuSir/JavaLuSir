@@ -22,6 +22,15 @@ public class Tzcrond {
     @Autowired
     private ServiceDataAccount serviceDataAccount;
 
+    /**
+     * 秒	 	0-59	 	, - * /
+     * 分	 	0-59	 	, - * /
+     * 小时	 	0-23	 	, - * /
+     * 日期	 	1-31	 	, - * ? / L W C
+     * 月份	 	1-12 或者 JAN-DEC	 	, - * /
+     * 星期	 	1-7 或者 SUN-SAT	 	, - * ? / L C #
+     * 年（可选）	 	留空, 1970-2099	 	, - * /
+     */
     //3.添加定时任务  周一到周五晚上23:45执行定时任务
     @Scheduled(cron = "0 45 23 ? * MON-FRI")
     //或直接指定时间间隔，例如：5秒
@@ -67,6 +76,41 @@ public class Tzcrond {
         String lastDateStr = getLastDate();
         //获取当天交易日期
         String todayDateStr = getTodayDate();
+        //更新股票收益信息
+        updateStockInfo(lastDateStr, todayDateStr);
+        //更新基金收益信息
+       // updateFundsInfo(lastDateStr, todayDateStr);
+    }
+
+    private void updateStockInfo(String lastDateStr, String todayDateStr) {
+        List<Map<String, Object>> touziacc = serviceDataAccount.queryTouziInfo("1");
+        for (Map<String, Object> m : touziacc) {
+            {
+                //获取基金编码/股票代码
+                String tcode = m.get("TCODE") + "";
+                String aid = m.get("AID") + "";
+
+                //获取日期对应收盘价格
+                Map<String, String> paramMap = getStockPriceMap(tcode);
+                String tprice = paramMap.get(todayDateStr);
+                String lprice = paramMap.get(lastDateStr);
+                String baseprice = m.get("TBASE")+"";
+                String tnum = m.get("TNUM")+"";
+                System.out.println(tcode + "--tprice:" + tprice);
+                System.out.println(tcode + "--lprice:" + lprice);
+                //计算收益入库
+                calcPrice(tcode,baseprice,tnum,tprice,lprice,aid);
+            }
+        }
+    }
+
+    /**
+     * 更新基金收益
+     *
+     * @param lastDateStr
+     * @param todayDateStr
+     */
+    private void updateFundsInfo(String lastDateStr, String todayDateStr) {
         List<Map<String, Object>> touziacc = serviceDataAccount.queryTouziInfo("2");
         for (Map<String, Object> m : touziacc) {
             try {
@@ -74,49 +118,20 @@ public class Tzcrond {
                 String tcode = m.get("TCODE") + "";
                 String aid = m.get("AID") + "";
                 //获取上日请求的URL
-                String lastUrlStr = paddingURL(tcode, lastDateStr);
+                String lastUrlStr = paddingFundsURL(tcode, lastDateStr);
                 //获取上个交易日的基金净值
                 String lprice = getPrice(lastUrlStr);
+
+                String tbase = m.get("TBASE").toString();
+                String tnum = m.get("TNUM").toString();
                 //获取今天交易日的基金净值
-                String todayUrlStr = paddingURL(tcode, todayDateStr);
+                String todayUrlStr = paddingFundsURL(tcode, todayDateStr);
                 //获取今天交易日基金净值
                 String tprice = getPrice(todayUrlStr);
                 System.out.println(tcode + "--tprice:" + tprice);
                 System.out.println(tcode + "--lprice:" + lprice);
-
-                //构造更新数据参数
-                Map<String, String> paramMap = new HashMap<>();
-                if (!tprice.isEmpty()) {
-                    //设置当天净值/价格
-                    paramMap.put("TNPRICE", tprice);
-                }
-                if (!lprice.isEmpty()) {
-                    //设置上个交易日净值/价格
-                    paramMap.put("TLPRICE", lprice);
-                }
-                if (tprice.isEmpty() || lprice.isEmpty()) {
-                    continue;
-                }
-                //计算当天收益额度
-                BigDecimal numdecimal = new BigDecimal(m.get("TNUM").toString());
-                //今天交易净值
-                BigDecimal todayprice = new BigDecimal(tprice);
-                //上个交易净值
-                BigDecimal lpricedecimal = new BigDecimal(lprice);
-                //净值差额
-                BigDecimal delta = todayprice.subtract(lpricedecimal);
-                //净值价差
-                BigDecimal todayresult = numdecimal.multiply(delta);
-                todayresult.setScale(2, BigDecimal.ROUND_HALF_DOWN);
-                paramMap.put("TEARN", String.valueOf(todayresult.floatValue()));
-                //计算总收益额度
-                BigDecimal basedecimal = new BigDecimal(m.get("TBASE").toString());
-                BigDecimal totaldeta = todayprice.subtract(basedecimal);
-                BigDecimal totalresult = numdecimal.multiply(totaldeta);
-                totalresult.setScale(2, BigDecimal.ROUND_HALF_DOWN);
-                paramMap.put("TOTALEARN", String.valueOf(totalresult.floatValue()));
-
-                serviceDataAccount.updateTouziInfo(tcode, aid, paramMap);
+                //计算收益入库
+                calcPrice(tcode,tbase,tnum,tprice,lprice,aid);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -173,8 +188,88 @@ public class Tzcrond {
         }
     }
 
-    private String paddingURL(String tcode, String datestr) {
+    private String paddingFundsURL(String tcode, String datestr) {
         return "https://fundf10.eastmoney.com/F10DataApi.aspx?type=lsjz&code=" + tcode + "&page=1&per=2&sdate=" + datestr + "&edate=" + datestr;
+    }
+
+    private String paddingStockURL(String tcode) {
+        return "https://data.gtimg.cn/flashdata/hushen/daily/21/" + tcode + ".js";
+    }
+
+    /**
+     * 根据获取结果计算收益
+     * @param tcode
+     * @param baseprice
+     * @param tprice
+     * @param lprice
+     * @param aid
+     */
+    private void calcPrice(String tcode,String baseprice,String tnum,String tprice,String lprice,String aid){
+        if (tprice.isEmpty() || lprice.isEmpty()) {
+            return;
+        }
+        Map<String,String > paramMap = new HashMap<>();
+        if (!tprice.isEmpty()) {
+            //设置当天净值/价格
+            paramMap.put("TNPRICE", tprice);
+        }
+        if (!lprice.isEmpty()) {
+            //设置上个交易日净值/价格
+            paramMap.put("TLPRICE", lprice);
+        }
+
+        //计算当天收益额度
+        BigDecimal numdecimal = new BigDecimal(tnum);
+        //今天交易净值
+        BigDecimal todayprice = new BigDecimal(tprice);
+        //上个交易净值
+        BigDecimal lpricedecimal = new BigDecimal(lprice);
+        //净值差额
+        BigDecimal delta = todayprice.subtract(lpricedecimal);
+        //净值价差
+        BigDecimal todayresult = numdecimal.multiply(delta);
+        todayresult.setScale(2, BigDecimal.ROUND_HALF_DOWN);
+        paramMap.put("TEARN", String.valueOf(todayresult.floatValue()));
+        //计算总收益额度
+        BigDecimal basedecimal = new BigDecimal(baseprice);
+        BigDecimal totaldeta = todayprice.subtract(basedecimal);
+        BigDecimal totalresult = numdecimal.multiply(totaldeta);
+        totalresult.setScale(2, BigDecimal.ROUND_HALF_DOWN);
+        paramMap.put("TOTALEARN", String.valueOf(totalresult.floatValue()));
+
+        serviceDataAccount.updateTouziInfo(tcode, aid, paramMap);
+    }
+
+    /**
+     * 获取股票日期对应收盘价格
+     * @param tcode
+     * @return
+     */
+    private Map<String, String> getStockPriceMap(String tcode) {
+        String urlStr = paddingStockURL(tcode);
+        String result = null;
+        try {
+            result = HttpUtil.get(urlStr);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        String lastday = getLastDate().substring(2).replaceAll("-","");
+        String today = getTodayDate().substring(2).replaceAll("-","");
+        Map<String, String> resultmap = new HashMap<>();
+        String pricelast = result.substring(result.indexOf(lastday));
+        String[] pricearry= pricelast.split("n\\\\");
+        for (String s : pricearry) {
+            if (s.startsWith(lastday)) {
+                String[] w = s.split(" ");
+                resultmap.put(getLastDate(), w[2]);
+
+            }
+            if (s.startsWith(today)) {
+                String[] d = s.split(" ");
+                resultmap.put(getTodayDate(), d[2]);
+            }
+        }
+        return resultmap;
     }
 
 }
