@@ -39,7 +39,7 @@ public class Tzcrond {
         //更新投资账户金额
         updateTouziInfo();
         //更新账户变动资金流水
-        updateAccountInfo();
+        //updateAccountInfo();
 
     }
 
@@ -79,7 +79,7 @@ public class Tzcrond {
         //更新股票收益信息
         updateStockInfo(lastDateStr, todayDateStr);
         //更新基金收益信息
-       // updateFundsInfo(lastDateStr, todayDateStr);
+        updateFundsInfo(lastDateStr, todayDateStr);
     }
 
     private void updateStockInfo(String lastDateStr, String todayDateStr) {
@@ -193,7 +193,7 @@ public class Tzcrond {
     }
 
     private String paddingStockURL(String tcode) {
-        return "https://data.gtimg.cn/flashdata/hushen/daily/21/" + tcode + ".js";
+        return "https://data.gtimg.cn/flashdata/hushen/daily/"+getTodayDate().substring(2,4)+"/" + tcode + ".js";
     }
 
     /**
