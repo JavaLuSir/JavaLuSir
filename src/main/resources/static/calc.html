@@ -26,7 +26,8 @@
 <hr/>
 <div id="calendaritem" style="height: 85%;width:92%;margin-left:4%;padding-top:6%;">
 </div>
-<div style="font-weight:700;margin-left:3%;"><a href="#" onclick="refresh();">点击更新</a></div>
+<div style="font-weight:700;margin-left:3%;"><a href="#" onclick="refresh();">收益更新</a></div>
+<div style="font-weight:700;margin-left:3%;"><a href="#" onclick="refreshDate();">日期重置</a></div>
 <div style="font-weight:700;margin-left:3%;">月度收益:<span id="monthearn"></span></div>
 <hr/>
 <div id="baritem" style="height: 100%;width:92%;margin-left:4%;">
@@ -74,6 +75,23 @@
     var refresh = function(){
         $.ajax({
             url: host + '/rest/refreshfunds',
+            type: 'POST',
+            dataType:'json',
+            contentType: 'application/json',
+            beforeSend: function (request) {
+                request.setRequestHeader("token", token);
+            },
+            success: function (result) {
+
+            },
+            error: function () {
+                mui.toast('网络错误');
+            }
+
+        });}
+    var refreshDate = function(){
+        $.ajax({
+            url: host + '/rest/resetdate',
             type: 'POST',
             dataType:'json',
             contentType: 'application/json',
