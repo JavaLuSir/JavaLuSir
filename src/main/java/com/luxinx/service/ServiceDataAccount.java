@@ -114,8 +114,13 @@ public interface ServiceDataAccount {
     List<Map<String,Object>> earnTotal(String datestr);
 
     /**
-     *
+     * 查询投资分布
      * @return
      */
     List<Map<String,Object>> fenbu();
+
+    /**
+     * 日期设置成上个交易日
+     */
+    void resetDate();
 }

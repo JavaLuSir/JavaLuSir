@@ -198,4 +198,10 @@ public class ControllerAccount {
     public String fenbu() {
         return JSON.toJSONString(serviceDataAccount.fenbu());
     }
+
+    @RequestMapping("/resetdate")
+    public String resetdate() {
+        serviceDataAccount.resetDate();
+        return "";
+    }
 }
