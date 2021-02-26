@@ -59,14 +59,14 @@ public class Tzcrond {
             if (trnum > 0) {
                 param.put("TRKIND", "71");
                 String remark = "基金收益";
-                if(aid.equals("38")||aid.equals("52")){
-                    remark="股票收益";
+                if (aid.equals("38") || aid.equals("52")) {
+                    remark = "股票收益";
                 }
                 param.put("REMARK", remark);
             } else {
                 String remark = "基金亏损";
-                if(aid.equals("38")||aid.equals("52")){
-                    remark="股票亏损";
+                if (aid.equals("38") || aid.equals("52")) {
+                    remark = "股票亏损";
                 }
                 param.put("TRKIND", "90");
                 param.put("REMARK", remark);
@@ -102,12 +102,12 @@ public class Tzcrond {
                 Map<String, String> paramMap = getStockPriceMap(tcode);
                 String tprice = paramMap.get(todayDateStr);
                 String lprice = paramMap.get(lastDateStr);
-                String baseprice = m.get("TBASE")+"";
-                String tnum = m.get("TNUM")+"";
+                String baseprice = m.get("TBASE") + "";
+                String tnum = m.get("TNUM") + "";
                 System.out.println(tcode + "--tprice:" + tprice);
                 System.out.println(tcode + "--lprice:" + lprice);
                 //计算收益入库
-                calcPrice(tcode,baseprice,tnum,tprice,lprice,aid);
+                calcPrice(tcode, baseprice, tnum, tprice, lprice, aid);
             }
         }
     }
@@ -139,7 +139,7 @@ public class Tzcrond {
                 System.out.println(tcode + "--tprice:" + tprice);
                 System.out.println(tcode + "--lprice:" + lprice);
                 //计算收益入库
-                calcPrice(tcode,tbase,tnum,tprice,lprice,aid);
+                calcPrice(tcode, tbase, tnum, tprice, lprice, aid);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -201,22 +201,23 @@ public class Tzcrond {
     }
 
     private String paddingStockURL(String tcode) {
-        return "https://data.gtimg.cn/flashdata/hushen/daily/"+getTodayDate().substring(2,4)+"/" + tcode + ".js";
+        return "https://data.gtimg.cn/flashdata/hushen/daily/" + getTodayDate().substring(2, 4) + "/" + tcode + ".js";
     }
 
     /**
      * 根据获取结果计算收益
+     *
      * @param tcode
      * @param baseprice
      * @param tprice
      * @param lprice
      * @param aid
      */
-    private void calcPrice(String tcode,String baseprice,String tnum,String tprice,String lprice,String aid){
-        if (tprice.isEmpty() || lprice.isEmpty()) {
+    private void calcPrice(String tcode, String baseprice, String tnum, String tprice, String lprice, String aid) {
+        if (tprice == null || lprice == null || tprice.isEmpty() || lprice.isEmpty()) {
             return;
         }
-        Map<String,String > paramMap = new HashMap<>();
+        Map<String, String> paramMap = new HashMap<>();
         if (!tprice.isEmpty()) {
             //设置当天净值/价格
             paramMap.put("TNPRICE", tprice);
@@ -250,6 +251,7 @@ public class Tzcrond {
 
     /**
      * 获取股票日期对应收盘价格
+     *
      * @param tcode
      * @return
      */
@@ -261,11 +263,11 @@ public class Tzcrond {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        String lastday = getLastDate().substring(2).replaceAll("-","");
-        String today = getTodayDate().substring(2).replaceAll("-","");
+        String lastday = getLastDate().substring(2).replaceAll("-", "");
+        String today = getTodayDate().substring(2).replaceAll("-", "");
         Map<String, String> resultmap = new HashMap<>();
         String pricelast = result.substring(result.indexOf(lastday));
-        String[] pricearry= pricelast.split("n\\\\");
+        String[] pricearry = pricelast.split("n\\\\");
         for (String s : pricearry) {
             if (s.startsWith(lastday)) {
                 String[] w = s.split(" ");
