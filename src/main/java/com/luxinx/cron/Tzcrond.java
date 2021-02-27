@@ -72,6 +72,8 @@ public class Tzcrond {
                 param.put("REMARK", remark);
             }
             param.put("TRNUM", String.valueOf(Math.abs(trnum)));
+            param.put("IFAUTO", "1");
+
             serviceDataAccount.addDetail(param);
         }
         serviceDataAccount.updateTouziTime(getTodayDate());

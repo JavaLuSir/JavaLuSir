@@ -107,13 +107,17 @@ public class DataAccountServiceImpl implements ServiceDataAccount {
         String trnum = param.get("TRNUM");
         String remark = param.get("REMARK");
         String oppid = param.get("OPPID");
+        String ifauto = param.get("IFAUTO");
+        if (ifauto == null) {
+            ifauto = "0";
+        }
         if (StringUtils.isEmpty(oppid)) {
             oppid = "0";
         }
 
         //加入交易明细
-        String insertSQL = "INSERT INTO T_WATER (AID,TRDATE,TRADEKIND,TRTYPE,WACCOUNT,WACCNAME,TRNUM,REMARK,OPPID,CREATETIME,UPDATETIME) VALUES(?,?,?,?,?,?,?,?,?,NOW(),NOW())";
-        jdbcTemplate.update(insertSQL, aid, trdate, tradekind, trtype, waccount, waccname, trnum, remark, oppid);
+        String insertSQL = "INSERT INTO T_WATER (AID,TRDATE,TRADEKIND,TRTYPE,WACCOUNT,WACCNAME,TRNUM,REMARK,OPPID,CREATETIME,UPDATETIME,IFAUTO) VALUES(?,?,?,?,?,?,?,?,?,NOW(),NOW(),?)";
+        jdbcTemplate.update(insertSQL, aid, trdate, tradekind, trtype, waccount, waccname, trnum, remark, oppid,ifauto);
         BigDecimal changeMoney = new BigDecimal(trnum);
         if ("0".equals(oppid)) {
             //更新金额
@@ -268,6 +272,12 @@ public class DataAccountServiceImpl implements ServiceDataAccount {
         MapSqlParameterSource param = new MapSqlParameterSource();
         param.addValue("datestr", datestr);
         npjt.update(sql, param);
+        String sqlrevokeIds = "SELECT WID FROM T_WATER WHERE DATE_FORMAT(CREATETIME,'%Y-%m-%d')=DATE_FORMAT(NOW(),'%Y-%m-%d') AND IFAUTO='1'";
+        List<Map<String, Object>> listWaterid = npjt.queryForList(sqlrevokeIds, param);
+        for (Map<String,Object> waterid:listWaterid){
+            delDetail(waterid.get("WID")+"");
+        }
+
     }
 
     /**
