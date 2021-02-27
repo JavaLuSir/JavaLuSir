@@ -191,7 +191,7 @@ public class ControllerAccount {
     @RequestMapping("/refreshfunds")
     public String refreshfunds() {
         tzcrond.configureTasks();
-        return "操作成功";
+        return "{msg:'操作成功'}";
     }
 
     @RequestMapping("/fenbu")
@@ -202,6 +202,6 @@ public class ControllerAccount {
     @RequestMapping("/resetdate")
     public String resetdate() {
         serviceDataAccount.resetDate();
-        return "操作成功";
+        return "{msg:'操作成功'}";
     }
 }
