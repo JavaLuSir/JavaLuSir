@@ -123,7 +123,7 @@ public class DataAccountServiceImpl implements ServiceDataAccount {
             //更新金额
             spend(Integer.parseInt(aid), Integer.parseInt(trtype), changeMoney);
         } else {
-            jdbcTemplate.update(insertSQL, oppid, trdate, tradekind, 1, waccount, waccname, trnum, remark, aid);
+            jdbcTemplate.update(insertSQL, oppid, trdate, tradekind, 1, waccount, waccname, trnum, remark, aid,ifauto);
             //更新金额
             trans(Integer.parseInt(aid), Integer.parseInt(oppid), Integer.parseInt(trtype), changeMoney);
         }
