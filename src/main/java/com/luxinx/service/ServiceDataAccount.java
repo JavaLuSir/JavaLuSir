@@ -123,4 +123,10 @@ public interface ServiceDataAccount {
      * 日期设置成上个交易日
      */
     void resetDate();
+
+    /**
+     * 查询每月投资收益
+     * @param yyyy 年度
+     */
+    List<String> everymonth(String yyyy);
 }

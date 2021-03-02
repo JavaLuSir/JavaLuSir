@@ -117,13 +117,13 @@ public class DataAccountServiceImpl implements ServiceDataAccount {
 
         //加入交易明细
         String insertSQL = "INSERT INTO T_WATER (AID,TRDATE,TRADEKIND,TRTYPE,WACCOUNT,WACCNAME,TRNUM,REMARK,OPPID,CREATETIME,UPDATETIME,IFAUTO) VALUES(?,?,?,?,?,?,?,?,?,NOW(),NOW(),?)";
-        jdbcTemplate.update(insertSQL, aid, trdate, tradekind, trtype, waccount, waccname, trnum, remark, oppid,ifauto);
+        jdbcTemplate.update(insertSQL, aid, trdate, tradekind, trtype, waccount, waccname, trnum, remark, oppid, ifauto);
         BigDecimal changeMoney = new BigDecimal(trnum);
         if ("0".equals(oppid)) {
             //更新金额
             spend(Integer.parseInt(aid), Integer.parseInt(trtype), changeMoney);
         } else {
-            jdbcTemplate.update(insertSQL, oppid, trdate, tradekind, 1, waccount, waccname, trnum, remark, aid,ifauto);
+            jdbcTemplate.update(insertSQL, oppid, trdate, tradekind, 1, waccount, waccname, trnum, remark, aid, ifauto);
             //更新金额
             trans(Integer.parseInt(aid), Integer.parseInt(oppid), Integer.parseInt(trtype), changeMoney);
         }
@@ -274,10 +274,25 @@ public class DataAccountServiceImpl implements ServiceDataAccount {
         npjt.update(sql, param);
         String sqlrevokeIds = "SELECT WID FROM T_WATER WHERE DATE_FORMAT(CREATETIME,'%Y-%m-%d')=DATE_FORMAT(NOW(),'%Y-%m-%d') AND IFAUTO='1'";
         List<Map<String, Object>> listWaterid = npjt.queryForList(sqlrevokeIds, param);
-        for (Map<String,Object> waterid:listWaterid){
-            delDetail(waterid.get("WID")+"");
+        for (Map<String, Object> waterid : listWaterid) {
+            delDetail(waterid.get("WID") + "");
         }
 
+    }
+
+    @Override
+    public List<String> everymonth(String yyyy) {
+        String quersql = "SELECT SUM(CASE TRADEKIND WHEN 90 THEN -TRNUM ELSE TRNUM END) TOTAL, DATE_FORMAT(TRDATE,'%m') MON FROM T_WATER WHERE (TRADEKIND='71' OR TRADEKIND='90') AND DATE_FORMAT(TRDATE,'%Y')=:yyyy GROUP BY MON\n";
+        NamedParameterJdbcTemplate npjt = new NamedParameterJdbcTemplate(this.jdbcTemplate.getDataSource());
+        MapSqlParameterSource param = new MapSqlParameterSource();
+        param.addValue("yyyy", yyyy);
+        List<Map<String, Object>> result = npjt.queryForList(quersql, param);
+        List<String> values = new ArrayList<>();
+        for (Map<String, Object> mpresult : result) {
+            String value = mpresult.get("TOTAL") + "";
+            values.add(value);
+        }
+        return values;
     }
 
     /**

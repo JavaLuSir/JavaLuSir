@@ -182,6 +182,12 @@ public class ControllerAccount {
         return JSON.toJSONString(result);
     }
 
+    @RequestMapping("/everymonth")
+    public String everyMonth(@RequestParam String datestr) {
+        List<String> jsonresult = serviceDataAccount.everymonth(datestr);
+        return JSON.toJSONString(jsonresult);
+    }
+
     @RequestMapping("/earntotal")
     public String earntotal(@RequestParam String datestr) {
         List<Map<String, Object>> erantotal = serviceDataAccount.earnTotal(datestr);
