@@ -42,28 +42,13 @@ public class Tzcrond {
         updateAccountInfo();
 
     }
-    //3.添加定时任务  周一到周五晚上23:45执行定时任务
-    @Scheduled(cron = "0 0 18 ? * *")
-    //或直接指定时间间隔，例如：5秒
-    //@Scheduled(fixedRate = 10000)
-    public void configureTaskCash() {
-        //更新理财投资账户金额
-        updateLicai();
-        //新账户变动资金流水
-        updateAccountInfo();
 
-    }
-
-    private void updateLicai(){
-
-    }
 
     private void updateAccountInfo() {
         List<Map<String, Object>> moneylist = serviceDataAccount.queryTodayTouziMoney(getLastDate());
 
         for (Map<String, Object> m : moneylist) {
             String aid = m.get("AID") + "";
-            String tztype = m.get("TZTYPE") + "";
 
             Float trnum = Float.valueOf(m.get("TRNUM") + "");
             if (trnum == 0) {
@@ -183,7 +168,7 @@ public class Tzcrond {
         if (wk.equals("星期一")) {
             cd.add(Calendar.DATE, -3);
         } else {
-            cd.add(Calendar.DATE, -1);
+            cd.add(Calendar.DATE, -3);
         }
         return sdf.format(cd.getTime());
     }
@@ -191,7 +176,7 @@ public class Tzcrond {
     private String getTodayDate() {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         Date dt = new Date();
-        return sdf.format(dt);
+        return "2021-03-05";
     }
 
     private String getPrice(String urlStr) {
