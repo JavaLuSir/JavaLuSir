@@ -196,7 +196,7 @@ public class ControllerAccount {
 
     @RequestMapping("/refreshfunds")
     public String refreshfunds() {
-        tzcrond.configureTasks();
+        tzcrond.configureTaskFund();
         return "{msg:'操作成功'}";
     }
 

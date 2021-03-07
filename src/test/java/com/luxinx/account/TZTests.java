@@ -18,6 +18,6 @@ class TZTests {
 
     @Test
     public void testCrond(){
-        tzcrond.configureTasks();
+        tzcrond.configureTaskFund();
     }
 }

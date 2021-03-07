@@ -35,11 +35,26 @@ public class Tzcrond {
     @Scheduled(cron = "0 45 23 ? * MON-FRI")
     //或直接指定时间间隔，例如：5秒
     //@Scheduled(fixedRate = 10000)
-    public void configureTasks() {
+    public void configureTaskFund() {
         //更新投资账户金额
         updateTouziInfo();
         //新账户变动资金流水
         updateAccountInfo();
+
+    }
+    //3.添加定时任务  周一到周五晚上23:45执行定时任务
+    @Scheduled(cron = "0 0 18 ? * *")
+    //或直接指定时间间隔，例如：5秒
+    //@Scheduled(fixedRate = 10000)
+    public void configureTaskCash() {
+        //更新理财投资账户金额
+        updateLicai();
+        //新账户变动资金流水
+        updateAccountInfo();
+
+    }
+
+    private void updateLicai(){
 
     }
 
@@ -48,6 +63,8 @@ public class Tzcrond {
 
         for (Map<String, Object> m : moneylist) {
             String aid = m.get("AID") + "";
+            String tztype = m.get("TZTYPE") + "";
+
             Float trnum = Float.valueOf(m.get("TRNUM") + "");
             if (trnum == 0) {
                 continue;
@@ -61,6 +78,9 @@ public class Tzcrond {
                 String remark = "基金收益";
                 if (aid.equals("38") || aid.equals("52")) {
                     remark = "股票收益";
+                }
+                if (aid.equals("56")) {
+                    remark = "理财收益";
                 }
                 param.put("REMARK", remark);
             } else {
