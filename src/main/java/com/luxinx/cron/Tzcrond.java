@@ -168,7 +168,7 @@ public class Tzcrond {
         if (wk.equals("星期一")) {
             cd.add(Calendar.DATE, -3);
         } else {
-            cd.add(Calendar.DATE, -3);
+            cd.add(Calendar.DATE, -1);
         }
         return sdf.format(cd.getTime());
     }
@@ -176,7 +176,7 @@ public class Tzcrond {
     private String getTodayDate() {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         Date dt = new Date();
-        return "2021-03-05";
+        return sdf.format(dt);
     }
 
     private String getPrice(String urlStr) {
