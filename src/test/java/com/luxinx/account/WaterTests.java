@@ -65,32 +65,42 @@ class WaterTests {
          }
      }
      private void calcFunds(List<Node> list){
-        Map<String,Float> s = new HashMap<>();
+        Map<String,Float> name_num = new HashMap<>();
         for(int i=0;i<list.size();i++){
-            if(s.containsKey(list.get(i).name)){
-                BigDecimal bdm = new BigDecimal(s.get(list.get(i).name));
+            //求总数量 如果有基金名字取出做计算并放回name_num
+            if(name_num.containsKey(list.get(i).name)){
+                BigDecimal bdm = new BigDecimal(name_num.get(list.get(i).name));
                 BigDecimal bdm2 = new BigDecimal(list.get(i).num);
                 BigDecimal a = bdm.add(bdm2);
-                s.put(list.get(i).name,a.floatValue());
+                name_num.put(list.get(i).name,a.floatValue());
             }else{
-                s.put(list.get(i).name,list.get(i).num);
+                //如果没有直接放入数量
+                name_num.put(list.get(i).name,list.get(i).num);
             }
         }
+        //存储基金价格
         Map<String,Float> pr = new HashMap<>();
         for(Node n:list){
-            if(pr.get(n.name)==null){
-                pr.put(n.name,0.0F);
-            }
+            //判断如果不存在放入pr变量
+            pr.putIfAbsent(n.name, 0.0F);
+            //从pr获取净值
             Float cvalue = pr.get(n.name);
-            Float r = s.get(n.name);
-            BigDecimal total = new BigDecimal(r);
+            //获取数量
+            Float num = name_num.get(n.name);
+            //总数量
+            BigDecimal total = new BigDecimal(num);
+            //当前基金数量
             BigDecimal nnum = new BigDecimal(n.num);
-            BigDecimal b = nnum.divide(total,BigDecimal.ROUND_HALF_UP);
+            //当前基金占总数比
+            BigDecimal percent = nnum.divide(total,8,BigDecimal.ROUND_HALF_DOWN);
+            //当前基金净值
             BigDecimal pric = new BigDecimal(n.price);
             BigDecimal c = new BigDecimal(cvalue);
-            pr.put(n.name,c.add(b.multiply(pric)).floatValue());
+            //基金净值乘以占比后相加
+            pr.put(n.name,c.add(percent.multiply(pric)).floatValue());
+
         }
          System.out.println(pr);
-         System.out.println(s);
+         System.out.println(name_num);
      }
 }
