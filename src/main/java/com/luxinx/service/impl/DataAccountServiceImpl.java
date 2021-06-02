@@ -175,7 +175,7 @@ public class DataAccountServiceImpl implements ServiceDataAccount {
 
     @Override
     public List<Map<String, Object>> queryTouziInfo(String ttype) {
-        String query = "SELECT * FROM T_TOUZI T WHERE TTYPE = ?";
+        String query = "SELECT * FROM T_TOUZI T WHERE TTYPE = ?  ";
         return jdbcTemplate.queryForList(query, ttype);
     }
 

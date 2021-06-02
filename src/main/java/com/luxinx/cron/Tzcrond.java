@@ -38,7 +38,7 @@ public class Tzcrond {
     public void configureTaskFund() {
         //更新投资账户金额
         updateTouziInfo();
-        //新账户变动资金流水
+        //更新账户变动资金流水
         updateAccountInfo();
 
     }
@@ -63,9 +63,6 @@ public class Tzcrond {
                 String remark = "基金收益";
                 if (aid.equals("38") || aid.equals("52")) {
                     remark = "股票收益";
-                }
-                if (aid.equals("56")) {
-                    remark = "理财收益";
                 }
                 param.put("REMARK", remark);
             } else {
