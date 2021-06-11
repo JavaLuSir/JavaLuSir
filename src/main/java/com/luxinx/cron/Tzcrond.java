@@ -104,6 +104,9 @@ public class Tzcrond {
 
                 //获取日期对应收盘价格
                 Map<String, String> paramMap = getStockPriceMap(tcode);
+                if(paramMap.isEmpty()){
+                    continue;
+                }
                 String tprice = paramMap.get(todayDateStr);
                 String lprice = paramMap.get(lastDateStr);
                 String baseprice = m.get("TBASE") + "";
@@ -264,13 +267,18 @@ public class Tzcrond {
         String result = null;
         try {
             result = HttpUtil.get(urlStr);
+            System.out.println("!!!!!!!!!" + urlStr + "");
+
         } catch (Exception e) {
             e.printStackTrace();
         }
         String lastday = getLastDate().substring(2).replaceAll("-", "");
         String today = getTodayDate().substring(2).replaceAll("-", "");
         Map<String, String> resultmap = new HashMap<>();
-        String pricelast = result.substring(result.indexOf(lastday));
+        String pricelast = "";
+        if (result.contains(lastday)) {
+            pricelast = result.substring(result.indexOf(lastday));
+        }
         String[] pricearry = pricelast.split("n\\\\");
         for (String s : pricearry) {
             if (s.startsWith(lastday)) {

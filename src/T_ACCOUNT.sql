@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50731
 File Encoding         : 65001
 
-Date: 2021-02-27 17:11:35
+Date: 2021-03-29 04:00:23
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -36,7 +36,7 @@ CREATE TABLE `T_ACCOUNT` (
   PRIMARY KEY (`AID`),
   KEY `aaa` (`AID`) USING BTREE,
   KEY `qaz` (`ORDERNUM`,`UPDATETIME`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=56 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=57 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of T_ACCOUNT
@@ -64,3 +64,4 @@ INSERT INTO `T_ACCOUNT` VALUES ('52', '1', '寇', '华泰证券', '666600088951'
 INSERT INTO `T_ACCOUNT` VALUES ('53', '1', '芦', '天天基金', '18310120297', '12632.84', 'CNY', '天天基金', '2021-02-27 16:02:21', '2021-02-27 16:02:21', 'admin', '0', '15');
 INSERT INTO `T_ACCOUNT` VALUES ('54', '1', '芦鑫', '农业银行', '6228480019032625170', '0.00', 'CNY', '工资卡', '2021-02-20 17:49:32', '2021-02-20 17:49:32', 'admin', '0', '13');
 INSERT INTO `T_ACCOUNT` VALUES ('55', '1', '芦', '比特币', 'lx6416214@gmail.com', '2265.34', 'CNY', '比特币', '2021-02-27 15:32:01', '2021-02-27 15:32:01', 'admin', '0', '17');
+INSERT INTO `T_ACCOUNT` VALUES ('56', '1', '芦', '民生银行', '6226220146095475', '0.00', 'CNY', '民生银行', '2021-03-29 03:57:55', '2021-03-29 03:57:55', 'admin', '0', '0');
